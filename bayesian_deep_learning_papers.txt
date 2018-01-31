@@ -1,0 +1,22 @@
+Variational Inference: A Review for Statisticians
+A Tutorial on Variational Bayesian Inference
+Yarin Gal - Uncertainty in Deep Learning
+Alex Kendall, Yarin Gal - What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
+Yarin Gal, Zoubin Ghahramani - On Modern Deep Learning and Variational Inference
+Bishop - Pattern Recognition And Machine Learning Ch 10 (variational inference)
+Yarin Gal, Zoubin Ghahramani - Dropout as a Bayesian Approximation, Representing Model Uncertainty in Deep Learning
+Yarin Gal, Zoubin Ghahramani - Dropout as a Bayesian approximation, Insights and applications
+Yarin Gal, Zoubin Ghahramani - On Modern Deep Learning and Variational Inference
+Yarin Gal, Zoubin Ghahramani - Bayesian convolutional neural networks with Bernoulli approximate variational inference
+Yarin Gal, Zoubin Ghahramani - A theoretically grounded application of dropout in recurrent neural networks
+Tran, Hoffman, Murphy - Deep Probabilistic Programming (Edward)
+Dustin Tran, Alp Kucukelbir, Adji B. Dieng, Maja Rudolph, Dawen Liang, and David M. Blei - Edward. A library for probabilistic modeling, inference, and criticism
+Alex Kendall, Vijay Badrinarayanan, Roberto Cipolla - Bayesian SegNet, Model Uncertainty in Deep Convolutional Encoder-Decoder Architectures for Scene Understanding
+Alex Kendall, Yarin Gal, Roberto Cipolla - Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics
+Meire Fortunato, Charles Blundell, Oriol Vinyals - Bayesian Recurrent Neural Networks
+
+Others:
+Zoubin Ghahramani - Probabilistic machine learning and artificial intelligence
+Tony O'Hagan - Dicing with the unknown (About aleatoric and epistemic uncertainty)
+
+
