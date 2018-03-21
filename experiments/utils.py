@@ -5,6 +5,8 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from tqdm import tqdm
+import numpy as np
 
 ####################################################
 ## MC predictions (dropout at prediction time)
@@ -56,6 +58,7 @@ def predictive_entropy(MC_samples):
 
 
 def variation_ratios(MC_samples):
+    p_y_c = np.mean(MC_samples, axis=0)
     var_ratios = 1 - np.max(p_y_c, axis = 1)
     return var_ratios
 

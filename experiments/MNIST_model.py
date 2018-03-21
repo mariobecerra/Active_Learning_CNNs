@@ -70,7 +70,7 @@ model.fit(x_train, y_train,
           verbose=1,
           validation_data=(x_test, y_test))
 
-model.save('MNIST_model.h5')
+model.save('../out/MNIST_model.h5')
 
 
 
