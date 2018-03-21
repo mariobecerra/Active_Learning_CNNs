@@ -61,7 +61,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-keras.utils.plot_model(model, to_file='MNIST_model.png')
+# keras.utils.plot_model(model, to_file='MNIST_model.png')
 
 model.fit(x_train, y_train,
           batch_size=batch_size,
