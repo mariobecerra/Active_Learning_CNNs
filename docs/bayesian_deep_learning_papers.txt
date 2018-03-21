@@ -3,7 +3,6 @@ A Tutorial on Variational Bayesian Inference
 Bishop - Pattern Recognition And Machine Learning Ch 10 (variational inference)
 Alex Kendall, Yarin Gal - What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
 Yarin Gal - Uncertainty in Deep Learning
-Yarin Gal, Zoubin Ghahramani - On Modern Deep Learning and Variational Inference
 Yarin Gal, Zoubin Ghahramani - Dropout as a Bayesian Approximation, Representing Model Uncertainty in Deep Learning
 Yarin Gal, Zoubin Ghahramani - Dropout as a Bayesian approximation, Insights and applications
 Yarin Gal, Zoubin Ghahramani - Bayesian convolutional neural networks with Bernoulli approximate variational inference
