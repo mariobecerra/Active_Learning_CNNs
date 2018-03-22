@@ -29,5 +29,5 @@ Rowan McAllister, Yarin Gal, Alex Kendall, Mark van der Wilk, Amar Shah, Roberto
 Ambrish Rawat, Martin Wistuba, Maria-Irina Nicolae - Adversarial Phenomenon in the Eyes of Bayesian Deep Learning
 Reuben Feinman, Ryan R. Curtin, Saurabh Shintre, Andrew B. Gardner - Detecting Adversarial Samples from Artifacts
 John Bradshaw, Alexander G. de G. Matthews, Zoubin Ghahramani - Adversarial Examples, Uncertainty, and Transfer Testing Robustness in Gaussian Process Hybrid Deep Networks
-
-
+Neil Houlsby, Ferenc Huszar, Zoubin Ghahramani, Mate Lengyel - Bayesian Active Learning for Classification and Preference Learning
+Stephan Mandt, Matthew D. Hoffman, David M. Blei - Stochastic Gradient Descent as Approximate Bayesian Inference
