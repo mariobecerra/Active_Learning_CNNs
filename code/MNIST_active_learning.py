@@ -1,7 +1,7 @@
 # Bayesian convnet on MNIST dataset
 # Example based on Yarin Gal's code https://github.com/yaringal/acquisition_example
 
-# Compute different acquisition functions to be used for active learning
+#  Active Learning with bayesian convnet and MNIST dataset
 
 #from __future__ import print_function
 import keras
