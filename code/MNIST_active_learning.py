@@ -74,8 +74,8 @@ x_val = x_pool[ix_val, :, :]
 y_val = y_pool[ix_val]
 
 
-#for i in xrange(100):
-for i in xrange(3):
+#for i in range(100):
+for i in range(3):
     x_train = x_pool[ix_train, :, :]
     y_train = y_pool[ix_train]
     x_pool = x_pool[ix_pool, :, :]
