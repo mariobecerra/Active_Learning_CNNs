@@ -25,26 +25,26 @@ img_rows, img_cols = 28, 28
 # Data preprocessing
 
 # the data, shuffled and split between train and test sets
-(x_pool, y_pool), (x_test, y_test) = mnist.load_data()
+(x_all, y_all), (x_test, y_test) = mnist.load_data()
 print("Loaded MNIST data")
 
 if K.image_data_format() == 'channels_first':
-    x_pool = x_pool.reshape(x_pool.shape[0], 1, img_rows, img_cols)
+    x_all = x_all.reshape(x_all.shape[0], 1, img_rows, img_cols)
     x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
     input_shape = (1, img_rows, img_cols)
 else:
-    x_pool = x_pool.reshape(x_pool.shape[0], img_rows, img_cols, 1)
+    x_all = x_all.reshape(x_all.shape[0], img_rows, img_cols, 1)
     x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
     input_shape = (img_rows, img_cols, 1)
 
-x_pool = x_pool.astype('float32')/255
+x_all = x_all.astype('float32')/255
 x_test = x_test.astype('float32')/255
-#x_pool /= 255
+#x_all /= 255
 #x_test /= 255
 
 
 # convert class vectors to binary class matrices
-y_pool = keras.utils.to_categorical(y_pool, num_classes)
+y_all = keras.utils.to_categorical(y_all, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 print("Converted class vectors")
@@ -69,23 +69,23 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 print("Compiled model")
 
 # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-indices = np.arange(0, x_pool.shape[0])
+indices = np.arange(0, x_all.shape[0])
 np.random.seed(2018)
 shuffled_indices = np.random.permutation(indices)
 ix_train = shuffled_indices[0:20]
 ix_val = shuffled_indices[20:120]
 ix_pool = shuffled_indices[120:]
-x_val = x_pool[ix_val, :, :]
-y_val = y_pool[ix_val]
+x_val = x_all[ix_val, :, :]
+y_val = y_all[ix_val]
 
 
 #for i in range(100):
 for i in range(3):
     print("Iter: " + str(i))
-    x_train = x_pool[ix_train, :, :]
-    y_train = y_pool[ix_train]
-    x_pool = x_pool[ix_pool, :, :]
-    y_pool = y_pool[ix_pool]
+    x_train = x_all[ix_train, :, :]
+    y_train = y_all[ix_train]
+#    x_all = x_all[ix_pool, :, :]
+#    y_all = y_all[ix_pool]
     
     model.fit(x_train, y_train,
           batch_size=batch_size,
@@ -103,7 +103,7 @@ for i in range(3):
         # file exists
         MC_samples = np.load(MNIST_samples_file_name)
     else:
-        MC_samples = get_mc_predictions(model, x_pool, nb_iter=nb_MC_samples, batch_size=256)
+        MC_samples = get_mc_predictions(model, x_all[ix_pool,:,:], nb_iter=nb_MC_samples, batch_size=256)
         np.save(MNIST_samples_file_name, MC_samples)
     
     pred_entropy = predictive_entropy(MC_samples)
