@@ -40,9 +40,7 @@ x_pool = x_pool.astype('float32')/255
 x_test = x_test.astype('float32')/255
 #x_pool /= 255
 #x_test /= 255
-print('x_pool shape:', x_pool.shape)
-print(x_pool.shape[0], 'train samples')
-print(x_test.shape[0], 'test samples')
+
 
 # convert class vectors to binary class matrices
 y_pool = keras.utils.to_categorical(y_pool, num_classes)
@@ -76,7 +74,8 @@ x_val = x_pool[ix_val, :, :]
 y_val = y_pool[ix_val]
 
 
-for i in xrange(100):
+#for i in xrange(100):
+for i in xrange(3):
     x_train = x_pool[ix_train, :, :]
     y_train = y_pool[ix_train]
     x_pool = x_pool[ix_pool, :, :]
@@ -91,7 +90,7 @@ for i in xrange(100):
     model.save('../out/MNIST_model_' + str(i) + '.h5')
     
     # nb_MC_samples = 100
-    nb_MC_samples = 10
+    nb_MC_samples = 2
 
     MNIST_samples_file_name = "../out/MNIST_samples_" + str(i) + ".npy"
     if os.path.exists(MNIST_samples_file_name):
@@ -104,7 +103,7 @@ for i in xrange(100):
     pred_entropy = predictive_entropy(MC_samples)
     id_highest_uncertainty = pred_entropy.argsort()[::-1][:10]  # get the 10 points with highest entropy value
     
-    ix_train = np.concatenate(ix_train, id_highest_uncertainty)
+    ix_train = np.concatenate((ix_train, id_highest_uncertainty))
     ix_pool = np.setdiff1d(ix_pool, id_highest_uncertainty)
     
 #    for ind in pred_entropy.argsort()[::-1][:10]:  # get the 10 points with highest entropy value
