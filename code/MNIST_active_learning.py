@@ -26,6 +26,7 @@ img_rows, img_cols = 28, 28
 
 # the data, shuffled and split between train and test sets
 (x_pool, y_pool), (x_test, y_test) = mnist.load_data()
+print("Loaded MNIST data")
 
 if K.image_data_format() == 'channels_first':
     x_pool = x_pool.reshape(x_pool.shape[0], 1, img_rows, img_cols)
@@ -46,6 +47,8 @@ x_test = x_test.astype('float32')/255
 y_pool = keras.utils.to_categorical(y_pool, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
+print("Converted class vectors")
+
 # Specify architecture
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
@@ -63,6 +66,8 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
+print("Compiled model")
+
 # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
 indices = np.arange(0, x_pool.shape[0])
 np.random.seed(2018)
@@ -76,6 +81,7 @@ y_val = y_pool[ix_val]
 
 #for i in range(100):
 for i in range(3):
+    print("Iter: " + str(i))
     x_train = x_pool[ix_train, :, :]
     y_train = y_pool[ix_train]
     x_pool = x_pool[ix_pool, :, :]
