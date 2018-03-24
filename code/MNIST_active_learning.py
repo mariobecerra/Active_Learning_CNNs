@@ -12,7 +12,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import numpy as np
 import os
-from utils import get_mc_predictions, predictive_entropy
+from utils import get_mc_predictions, predictive_entropy, BALD, variation_ratios, predict_MC
 
 batch_size = 128
 num_classes = 10
@@ -44,8 +44,8 @@ x_test = x_test.astype('float32')/255
 
 
 # convert class vectors to binary class matrices
-y_all = keras.utils.to_categorical(y_all, num_classes)
-y_test = keras.utils.to_categorical(y_test, num_classes)
+y_all_cat = keras.utils.to_categorical(y_all, num_classes)
+y_test_cat = keras.utils.to_categorical(y_test, num_classes)
 
 print("Converted class vectors")
 
@@ -76,52 +76,83 @@ ix_train = shuffled_indices[0:20]
 ix_val = shuffled_indices[20:120]
 ix_pool = shuffled_indices[120:]
 x_val = x_all[ix_val, :, :]
-y_val = y_all[ix_val]
-
-
-#for i in range(100):
-for i in range(3):
-    print("Iter: " + str(i))
-    x_train = x_all[ix_train, :, :]
-    y_train = y_all[ix_train]
-#    x_all = x_all[ix_pool, :, :]
-#    y_all = y_all[ix_pool]
-    
-    model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_val, y_val))    
-
-    model.save('../out/MNIST_model_' + str(i) + '.h5')
-    
-    # nb_MC_samples = 100
-    nb_MC_samples = 2
-
-    MNIST_samples_file_name = "../out/MNIST_samples_" + str(i) + ".npy"
-    if os.path.exists(MNIST_samples_file_name):
-        # file exists
-        MC_samples = np.load(MNIST_samples_file_name)
-    else:
-        MC_samples = get_mc_predictions(model, x_all[ix_pool,:,:], nb_iter=nb_MC_samples, batch_size=256)
-        np.save(MNIST_samples_file_name, MC_samples)
-    
-    pred_entropy = predictive_entropy(MC_samples)
-    id_highest_uncertainty = pred_entropy.argsort()[::-1][:10]  # get the 10 points with highest entropy value
-    
-    ix_train = np.concatenate((ix_train, id_highest_uncertainty))
-    ix_pool = np.setdiff1d(ix_pool, id_highest_uncertainty)
-    
-#    for ind in pred_entropy.argsort()[::-1][:10]:  # get the 10 points with highest entropy value
-#        probs_ind = np.mean(MC_samples[:,ind,:], axis = 0)
-#        pred_ind = np.argmax(probs_ind)
-#        real_ind = np.argmax(y_test[ind])
-#        print('index: ', ind, ', acq value: ', pred_entropy[ind], 'prediction: ', pred_ind, 'real: ', real_ind)
-#        pylab.imshow(x_test[ind].squeeze(), cmap="gray")
-#        pylab.show()
+y_val = y_all_cat[ix_val]
 
 
 
 
 
 
+#n_acq_steps = 100
+n_acq_steps = 3
+acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
+
+accuracies = np.zeros(shape = (n_acq_steps*3, 2))
+
+acq_fun_int = 0 # keeps track of acquisition function index
+for acq_fun in acq_fun_string:
+    acq_fun_int += 1
+    for i in range(n_acq_steps):
+        print("Iter: " + str(i))
+        x_train = x_all[ix_train, :, :]
+        y_train = y_all_cat[ix_train]
+    #    x_all = x_all[ix_pool, :, :]
+    #    y_all = y_all[ix_pool]
+        
+        model_file_name = '../out/MNIST_model_' + str(i) + '.h5'
+        if os.path.exists(model_file_name):
+            # file exists
+            model = keras.models.load_model(model_file_name)
+        else:
+            model.fit(x_train, y_train,
+              batch_size=batch_size,
+              epochs=epochs,
+              verbose=1,
+              validation_data=(x_val, y_val))
+            model.save(model_file_name)
+                    
+        # nb_MC_samples = 100
+        nb_MC_samples = 2
+
+        MNIST_samples_file_name = "../out/MNIST_samples_" + str(i) + ".npy"
+        if os.path.exists(MNIST_samples_file_name):
+            # file exists
+            MC_samples = np.load(MNIST_samples_file_name)
+        else:
+            MC_samples = get_mc_predictions(model, x_all[ix_pool,:,:], nb_iter=nb_MC_samples, batch_size=256)
+            np.save(MNIST_samples_file_name, MC_samples)
+        
+        if acq_fun == 'predictive_entropy':
+            acq_func_values = predictive_entropy(MC_samples)
+        if acq_fun == 'var_ratios':
+            acq_func_values = variation_ratios(MC_samples)
+        if acq_fun == 'bald':
+            acq_func_values = BALD(MC_samples)
+        
+        id_highest_uncertainty = acq_func_values.argsort()[::-1][:10]  # get the 10 points with highest entropy value
+        
+        ix_train = np.concatenate((ix_train, id_highest_uncertainty))
+        ix_pool = np.setdiff1d(ix_pool, id_highest_uncertainty)
+        
+        MNIST_samples_test_file_name = "../out/MNIST_samples_test_" + str(i) + ".npy"
+        if os.path.exists(MNIST_samples_test_file_name):
+            # file exists
+            MC_samples_test = np.load(MNIST_samples_test_file_name)
+        else:
+            MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
+            np.save(MNIST_samples_test_file_name, MC_samples_test)
+        
+        test_preds = predict_MC(MC_samples_test)
+        
+        accuracy = np.mean(y_test == test_preds)
+        accuracies[i,:] = [acq_fun_int, accuracy]
+        
+    #    for ind in pred_entropy.argsort()[::-1][:10]:  # get the 10 points with highest entropy value
+    #        probs_ind = np.mean(MC_samples[:,ind,:], axis = 0)
+    #        pred_ind = np.argmax(probs_ind)
+    #        real_ind = np.argmax(y_test[ind])
+    #        print('index: ', ind, ', acq value: ', pred_entropy[ind], 'prediction: ', pred_ind, 'real: ', real_ind)
+    #        pylab.imshow(x_test[ind].squeeze(), cmap="gray")
+    #        pylab.show()
+
+np.save("../out/MNIST_accuracies.npy", accuracies)
