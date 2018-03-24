@@ -16,8 +16,8 @@ from utils import get_mc_predictions, predictive_entropy, BALD, variation_ratios
 
 batch_size = 128
 num_classes = 10
-#epochs = 12
-epochs = 1
+epochs = 50
+#epochs = 1
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -83,8 +83,8 @@ y_val = y_all_cat[ix_val]
 
 
 
-#n_acq_steps = 100
-n_acq_steps = 3
+n_acq_steps = 100
+#n_acq_steps = 3
 acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
 
 accuracies = np.zeros(shape = (n_acq_steps*3, 2))
@@ -116,8 +116,8 @@ for acq_fun in acq_fun_string:
             print("\t\t\tSaving model to " + model_file_name)
             model.save(model_file_name)
                     
-        # nb_MC_samples = 100
-        nb_MC_samples = 2
+        nb_MC_samples = 100
+        # nb_MC_samples = 2
 
         MNIST_samples_file_name = "../out/MNIST_samples_" + acq_fun + "_" + str(i) + ".npy"
         if os.path.exists(MNIST_samples_file_name):
@@ -157,7 +157,10 @@ for acq_fun in acq_fun_string:
         accuracy = np.mean(y_test == test_preds)
         accuracies[j_acc,:] = [acq_fun_int, accuracy]
         print("\t\t\tAccuracy computed\n\n\n")
-        
+        print("\t\t\tSaving accuracies so far...")
+        np.save("../out/MNIST_accuracies_so_far.npy", accuracies)
+        print("\t\t\tAccuracies saved.")
+
     #    for ind in pred_entropy.argsort()[::-1][:10]:  # get the 10 points with highest entropy value
     #        probs_ind = np.mean(MC_samples[:,ind,:], axis = 0)
     #        pred_ind = np.argmax(probs_ind)
@@ -168,6 +171,6 @@ for acq_fun in acq_fun_string:
 
 print("Loop ended.\n\n")
 
-print("Saving accuracies...")
+print("Saving final accuracies...")
 np.save("../out/MNIST_accuracies.npy", accuracies)
-print("Accuracies saved.")
+print("Final ccuracies saved.")
