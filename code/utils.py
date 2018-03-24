@@ -43,7 +43,12 @@ def get_mc_predictions(model, X, nb_iter=50, batch_size=256):
     return np.asarray(preds_mc)
 
 
+def predict_MC(MC_samples):
+    p_y_c = np.mean(MC_samples, axis=0)
+    preds = np.argmax(p_y_c, axis = 1)
+    return preds
 
+    
 ####################################################
 ## Acquisition functions
 ####################################################
