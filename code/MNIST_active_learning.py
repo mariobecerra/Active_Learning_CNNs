@@ -88,20 +88,24 @@ n_acq_steps = 3
 acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
 
 accuracies = np.zeros(shape = (n_acq_steps*3, 2))
+j_acc = -1
 
 acq_fun_int = 0 # keeps track of acquisition function index
 for acq_fun in acq_fun_string:
+    print("\tAcquisition function: " + acq_fun)
     acq_fun_int += 1
     for i in range(n_acq_steps):
-        print("Iter: " + str(i))
+        j_acc += 1
+        print("\t\tIter: " + str(i))
         x_train = x_all[ix_train, :, :]
         y_train = y_all_cat[ix_train]
     #    x_all = x_all[ix_pool, :, :]
     #    y_all = y_all[ix_pool]
         
-        model_file_name = '../out/MNIST_model_' + str(i) + '.h5'
+        model_file_name = '../out/MNIST_model_' + acq_fun + "_" + str(i) + '.h5'
         if os.path.exists(model_file_name):
             # file exists
+            print("\t\t\tLoading model from " + model_file_name)
             model = keras.models.load_model(model_file_name)
         else:
             model.fit(x_train, y_train,
@@ -109,17 +113,20 @@ for acq_fun in acq_fun_string:
               epochs=epochs,
               verbose=1,
               validation_data=(x_val, y_val))
+            print("\t\t\tSaving model to " + model_file_name)
             model.save(model_file_name)
                     
         # nb_MC_samples = 100
         nb_MC_samples = 2
 
-        MNIST_samples_file_name = "../out/MNIST_samples_" + str(i) + ".npy"
+        MNIST_samples_file_name = "../out/MNIST_samples_" + acq_fun + "_" + str(i) + ".npy"
         if os.path.exists(MNIST_samples_file_name):
-            # file exists
+            print("\t\t\tLoading pool samples from " + MNIST_samples_file_name)
             MC_samples = np.load(MNIST_samples_file_name)
         else:
+            print("\t\t\tComputing pool samples")
             MC_samples = get_mc_predictions(model, x_all[ix_pool,:,:], nb_iter=nb_MC_samples, batch_size=256)
+            print("\t\t\tSaving pool samples to " + MNIST_samples_file_name)
             np.save(MNIST_samples_file_name, MC_samples)
         
         if acq_fun == 'predictive_entropy':
@@ -134,18 +141,22 @@ for acq_fun in acq_fun_string:
         ix_train = np.concatenate((ix_train, id_highest_uncertainty))
         ix_pool = np.setdiff1d(ix_pool, id_highest_uncertainty)
         
-        MNIST_samples_test_file_name = "../out/MNIST_samples_test_" + str(i) + ".npy"
+        MNIST_samples_test_file_name = "../out/MNIST_samples_test_" + acq_fun + "_" + str(i) + ".npy"
         if os.path.exists(MNIST_samples_test_file_name):
             # file exists
+            print("\t\t\tLoading test samples from " + MNIST_samples_test_file_name)
             MC_samples_test = np.load(MNIST_samples_test_file_name)
         else:
+            print("\t\t\tComputing test samples")
             MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
+            print("\t\t\tSaving test samples to " + MNIST_samples_test_file_name)
             np.save(MNIST_samples_test_file_name, MC_samples_test)
         
         test_preds = predict_MC(MC_samples_test)
         
         accuracy = np.mean(y_test == test_preds)
-        accuracies[i,:] = [acq_fun_int, accuracy]
+        accuracies[j_acc,:] = [acq_fun_int, accuracy]
+        print("\t\t\tAccuracy computed\n\n\n")
         
     #    for ind in pred_entropy.argsort()[::-1][:10]:  # get the 10 points with highest entropy value
     #        probs_ind = np.mean(MC_samples[:,ind,:], axis = 0)
@@ -155,4 +166,8 @@ for acq_fun in acq_fun_string:
     #        pylab.imshow(x_test[ind].squeeze(), cmap="gray")
     #        pylab.show()
 
+print("Loop ended.\n\n")
+
+print("Saving accuracies...")
 np.save("../out/MNIST_accuracies.npy", accuracies)
+print("Accuracies saved.")
