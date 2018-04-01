@@ -13,6 +13,7 @@ from keras import backend as K
 import numpy as np
 import os
 from utils import get_mc_predictions, predictive_entropy, BALD, variation_ratios, predict_MC
+#exec(open("utils.py").read())
 
 batch_size = 128
 num_classes = 10
