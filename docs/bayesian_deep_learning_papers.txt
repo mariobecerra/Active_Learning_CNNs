@@ -31,3 +31,4 @@ Reuben Feinman, Ryan R. Curtin, Saurabh Shintre, Andrew B. Gardner - Detecting A
 John Bradshaw, Alexander G. de G. Matthews, Zoubin Ghahramani - Adversarial Examples, Uncertainty, and Transfer Testing Robustness in Gaussian Process Hybrid Deep Networks
 Neil Houlsby, Ferenc Huszar, Zoubin Ghahramani, Mate Lengyel - Bayesian Active Learning for Classification and Preference Learning
 Stephan Mandt, Matthew D. Hoffman, David M. Blei - Stochastic Gradient Descent as Approximate Bayesian Inference
+Lewis Smith, Yarin Gal - Understanding Measures of Uncertainty for Adversarial Example Detection
