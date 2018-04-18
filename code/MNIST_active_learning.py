@@ -86,12 +86,14 @@ y_val = y_all_cat[ix_val]
 
 n_acq_steps = 100
 #n_acq_steps = 3
-acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
+#acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
+acq_fun_string = ['var_ratios', 'bald']
 
 accuracies = np.zeros(shape = (n_acq_steps*3, 2))
 j_acc = -1
 
-acq_fun_int = 0 # keeps track of acquisition function index
+#acq_fun_int = 0 # keeps track of acquisition function index
+acq_fun_int = 1 # 1 when starting with var ratios
 for acq_fun in acq_fun_string:
     print("\tAcquisition function: " + acq_fun)
     acq_fun_int += 1
