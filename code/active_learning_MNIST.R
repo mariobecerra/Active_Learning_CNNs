@@ -60,8 +60,12 @@ acquire_observations <- function(
   x_test, y_test, 
   nb_MC_samples = 100){
   
-  accuracies_file_name = paste0("../out/MNIST_", acq_fun, "_accuracies_so_far.csv")
-  train_pool_ix_file_name = paste0("../out/train_pool_ix_", acq_fun, ".rds")
+  dir.create("../out/MNIST/", showWarnings = F)
+  dest_folder = paste0("../out/MNIST/", acq_fun, "/")
+  dir.create(dest_folder)
+  
+  accuracies_file_name = paste0(dest_folder, "MNIST_", acq_fun, "_accuracies_so_far.csv")
+  train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
   
   x_val = x_all[ix_val, , , , drop = F]
   y_val = y_all_cat[ix_val, ]
@@ -86,9 +90,9 @@ acquire_observations <- function(
   
   # Begin loop
   for(i in 0:(n_acq_steps - 1)){
-    MNIST_samples_file_name = paste0("../out/MNIST_samples_", acq_fun, "_", i, ".npy")
-    MNIST_samples_test_file_name = paste0("../out/MNIST_samples_test_", acq_fun, "_", i, ".npy")
-    model_file_name = paste0('../out/MNIST_model_', acq_fun, "_", i, '.h5')
+    MNIST_samples_file_name = paste0(dest_folder, "MNIST_samples_", acq_fun, "_", i, ".npy")
+    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i, ".npy")
+    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i, '.h5')
     
     cat("\t\tIter:", i, "\n")
     
