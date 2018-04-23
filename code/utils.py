@@ -22,6 +22,9 @@ def get_mc_predictions(model, X, nb_iter=50, batch_size=256):
     :param batch_size:
     :return:
     """
+    nb_iter = int(nb_iter)
+    batch_size = int(batch_size)
+    
     output_dim = model.layers[-1].output.shape[-1].value
     get_output = K.function(
         [model.layers[0].input, K.learning_phase()],
