@@ -122,7 +122,7 @@ acquire_observations <- function(
         }
         # Compute MC samples
         cat("\t\t\tComputing pool samples\n")
-        MC_samples = get_mc_predictions(model, x_all[ix_pool,,], nb_iter = nb_MC_samples, batch_size = 256)
+        MC_samples = get_mc_predictions(model, x_all[ix_pool, , , , drop = F], nb_iter = nb_MC_samples, batch_size = 256)
         cat("\t\t\tSaving pool samples to ", MNIST_samples_file_name, "\n")
         np$save(MNIST_samples_file_name, MC_samples)
       } else {
@@ -153,6 +153,10 @@ acquire_observations <- function(
       ix_train = c(ix_train, id_highest_uncertainty)
       ix_pool = setdiff(ix_pool, id_highest_uncertainty)
       
+      # This should be thought through:
+      # if the id's of highest uncertainty examples have been computed but the test
+      # predictions haven't been made, then accuracies won't be computed.
+      # But this case won't likely happen.
       if(file.exists(MNIST_samples_test_file_name)){
         # test set MC samples file exists
         cat("\t\t\tLoading test samples from", MNIST_samples_test_file_name, "\n")
@@ -203,7 +207,20 @@ acquire_observations(
   nb_MC_samples = 100)
   
   
-  
+# Run funciton for variation ratios
+acquire_observations(
+  acq_fun = 'var_ratios', 
+  n_acq_steps = 100, 
+  ix_train = ix_train, 
+  ix_val = ix_val, 
+  ix_pool = ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100)
+
+
 
 
 
