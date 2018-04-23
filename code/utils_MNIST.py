@@ -1,3 +1,10 @@
+def create_shuffled_indices_MNIST():
+  indices = np.arange(0, x_all.shape[0])
+  np.random.seed(2018)
+  shuffled_indices = np.random.permutation(indices)
+  return shuffled_indices
+
+
 def MNIST_model():
   img_rows, img_cols = 28, 28
   if K.image_data_format() == 'channels_first':

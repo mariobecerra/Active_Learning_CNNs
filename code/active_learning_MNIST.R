@@ -41,11 +41,12 @@ model = MNIST_model()
 
 
 # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-set.seed(2018)
-shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-ix_train = shuffled_indices[0:20]
-ix_val = shuffled_indices[20:120]
-ix_pool = shuffled_indices[120:length(shuffled_indices)]
+# set.seed(2018)
+# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
+shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+ix_train = shuffled_indices[1:20]
+ix_val = shuffled_indices[21:120]
+ix_pool = shuffled_indices[121:length(shuffled_indices)]
 
 
 
