@@ -1,6 +1,8 @@
-def create_shuffled_indices_MNIST():
-  indices = np.arange(0, x_all.shape[0])
-  np.random.seed(2018)
+def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
+  seed = int(seed)
+  nrow = int(nrow)
+  indices = np.arange(0, nrow)
+  np.random.seed(seed)
   shuffled_indices = np.random.permutation(indices)
   return shuffled_indices
 
