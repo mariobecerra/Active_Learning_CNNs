@@ -39,20 +39,6 @@ cat("Converted class vectors\n")
 
 model = MNIST_model()
 
-
-# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# set.seed(2018)
-# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-ix_train = shuffled_indices[1:20]
-ix_val = shuffled_indices[21:120]
-ix_pool = shuffled_indices[121:length(shuffled_indices)]
-
-
-
-
-
-
 acquire_observations <- function(
   acq_fun, n_acq_steps, 
   ix_train, ix_val, ix_pool, 
@@ -193,6 +179,15 @@ acquire_observations <- function(
 
 #acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
 
+# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
+# set.seed(2018)
+# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
+shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+ix_train = shuffled_indices[1:20]
+ix_val = shuffled_indices[21:120]
+ix_pool = shuffled_indices[121:length(shuffled_indices)]
+
+
 # Run funciton for predictive entropy
 acquire_observations(
   acq_fun = 'predictive_entropy', 
@@ -206,10 +201,41 @@ acquire_observations(
   y_test = y_test, 
   nb_MC_samples = 100)
   
+
+# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
+# set.seed(2018)
+# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
+shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+ix_train = shuffled_indices[1:20]
+ix_val = shuffled_indices[21:120]
+ix_pool = shuffled_indices[121:length(shuffled_indices)]
+
   
 # Run funciton for variation ratios
 acquire_observations(
   acq_fun = 'var_ratios', 
+  n_acq_steps = 100, 
+  ix_train = ix_train, 
+  ix_val = ix_val, 
+  ix_pool = ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100)
+
+
+# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
+# set.seed(2018)
+# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
+shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+ix_train = shuffled_indices[1:20]
+ix_val = shuffled_indices[21:120]
+ix_pool = shuffled_indices[121:length(shuffled_indices)]
+
+# Run funciton for BALD
+acquire_observations(
+  acq_fun = 'bald', 
   n_acq_steps = 100, 
   ix_train = ix_train, 
   ix_val = ix_val, 
