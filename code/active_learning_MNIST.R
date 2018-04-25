@@ -247,6 +247,123 @@ acquire_observations(
   nb_MC_samples = 100)
 
 
-
+random_acquisition <- function(
+  n_acq_steps, 
+  ix_train, ix_val, ix_pool, 
+  x_all, y_all, 
+  x_test, y_test, 
+  nb_MC_samples = 100,
+  seed = 201804){
+  
+  set.seed(seed)
+  
+  dir.create("../out/MNIST/", showWarnings = F)
+  dest_folder = paste0("../out/MNIST/random_acq/")
+  dir.create(dest_folder)
+  
+  accuracies_file_name = paste0(dest_folder, "MNIST_", acq_fun, "_accuracies_so_far.csv")
+  train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
+  
+  x_val = x_all[ix_val, , , , drop = F]
+  y_val = y_all_cat[ix_val, ]
+  
+  if(file.exists(accuracies_file_name)){
+    accuracies <- read_csv(accuracies_file_name, col_types = cols(col_character(), col_double())) 
+  } else{
+    accuracies = tibble(acq_fun = acq_fun,
+                        accuracy = rep(NA, n_acq_steps))  
+    write_csv(accuracies, accuracies_file_name)
+  }
+  
+  if(file.exists(train_pool_ix_file_name)) {
+    # If file with the indices of each iteration exists, load it
+    train_pool_ix = readRDS(train_pool_ix_file_name)
+  } else {
+    # Otherwise, create empty list
+    train_pool_ix = vector("list", length = n_acq_steps)
+    names(train_pool_ix) = paste0("iter_", 0:(n_acq_steps - 1)) 
+    saveRDS(train_pool_ix, train_pool_ix_file_name)
+  }
+  
+  # Begin loop
+  for(i in 0:(n_acq_steps - 1)){
+    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i, ".npy")
+    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i, '.h5')
+    
+    cat("\t\tIter:", i, "\n")
+    
+    if(is.null(train_pool_ix[[i+1]])){
+      # If ith entry is null, it means that this hasn't been run before so
+      # we gotta compute uncertainties to get new examples
+      x_train = x_all[ix_train, , , , drop = F]
+      y_train = y_all_cat[ix_train, ]
+      
+      if(file.exists(model_file_name)){
+        # If model file exists, loads it
+        cat("\t\t\tLoading model from", model_file_name, "\n")
+        model = load_model_hdf5(model_file_name)
+      } else {
+        # If model file doesn't exist, then fit the model
+        model %>% 
+          fit(
+            x_train, y_train,
+            batch_size = batch_size,
+            epochs = 50,
+            verbose = 1,
+            validation_data = list(x_val, y_val)
+          )
+        cat("\t\t\tSaving model to ", model_file_name, "\n")
+        save_model_hdf5(model, model_file_name)
+      }
+      
+      new_train_examples = sample(ix_train, 10)
+      
+      # Save indices for this iteration
+      train_pool_ix[[i+1]] = list(
+        ix_pool = ix_pool,
+        ix_train = ix_train,
+        new_train_examples = new_train_examples
+      )
+      saveRDS(train_pool_ix, train_pool_ix_file_name)
+      
+      # Update pool and train indices
+      ix_train = c(ix_train, new_train_examples)
+      ix_pool = setdiff(ix_pool, new_train_examples)
+      
+      # This should be thought through:
+      # if the id's of highest uncertainty examples have been computed but the test
+      # predictions haven't been made, then accuracies won't be computed.
+      # But this case won't likely happen.
+      if(file.exists(MNIST_samples_test_file_name)){
+        # test set MC samples file exists
+        cat("\t\t\tLoading test samples from", MNIST_samples_test_file_name, "\n")
+        MC_samples_test = np$load(MNIST_samples_test_file_name)
+      } else{
+        cat("\t\t\tComputing test samples\n")
+        MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
+        cat("\t\t\tSaving test samples to", MNIST_samples_test_file_name, "\n")
+        np$save(MNIST_samples_test_file_name, MC_samples_test)
+      }
+      
+      test_preds = predict_MC(MC_samples_test)
+      
+      accuracy = mean(y_test == test_preds)
+      accuracies[i+1, 2] = accuracy
+      cat("\t\t\tAccuracy computed\n\n\n")
+      cat("\t\t\tSaving accuracies so far...")
+      write_csv(accuracies, accuracies_file_name)
+      cat("\t\t\tAccuracies saved.\n\n")
+      
+    } else {
+      # If the ith element isn't null means that uncertainties have been previously computed
+      cat("\t\t\tIndex file exists\n")
+      ix_train = c(train_pool_ix[[i+1]]$ix_train, train_pool_ix[[i+1]]$new_train_examples)
+      ix_pool = setdiff(train_pool_ix[[i+1]]$ix_pool, train_pool_ix[[i+1]]$new_train_examples)
+    }
+    
+    
+  } # end for loop
+  cat("\n\nLoop ended.\n\n\n")  
+}
 
 
