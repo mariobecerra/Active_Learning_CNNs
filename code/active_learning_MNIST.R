@@ -368,3 +368,24 @@ random_acquisition <- function(
 }
 
 
+
+# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
+# set.seed(2018)
+# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
+shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+ix_train = shuffled_indices[1:20]
+ix_val = shuffled_indices[21:120]
+ix_pool = shuffled_indices[121:length(shuffled_indices)]
+
+# Run funciton for BALD
+random_acquisition(
+  n_acq_steps = 100, 
+  ix_train = ix_train, 
+  ix_val = ix_val, 
+  ix_pool = ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100,
+  seed = 201804)
