@@ -256,6 +256,7 @@ random_acquisition <- function(
   seed = 201804){
   
   set.seed(seed)
+  acq_fun = 'random'
   
   dir.create("../out/MNIST/", showWarnings = F)
   dest_folder = paste0("../out/MNIST/random_acq/")
