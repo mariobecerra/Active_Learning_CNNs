@@ -377,7 +377,7 @@ ix_train = shuffled_indices[1:20]
 ix_val = shuffled_indices[21:120]
 ix_pool = shuffled_indices[121:length(shuffled_indices)]
 
-# Run funciton for BALD
+# Run funciton for random acquisition
 random_acquisition(
   n_acq_steps = 100, 
   ix_train = ix_train, 
