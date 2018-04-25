@@ -317,7 +317,7 @@ random_acquisition <- function(
         save_model_hdf5(model, model_file_name)
       }
       
-      new_train_examples = sample(ix_train, 10)
+      new_train_examples = sample(ix_pool, 10)
       
       # Save indices for this iteration
       train_pool_ix[[i+1]] = list(
