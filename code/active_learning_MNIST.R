@@ -2,40 +2,44 @@ library(reticulate)
 library(keras)
 library(tidyverse)
 
-np <- import("numpy")
-source_python("utils.py")
-source_python("utils_MNIST.py")
+#################################################################################
+#################################################################################
+## My functions
+#################################################################################
+#################################################################################
 
-num_classes = 10
-batch_size = 128
-epochs = 50
-
-# input image dimensions
-img_rows = 28 
-img_cols = 28
-
-mnist <- dataset_mnist()
-
-x_all <- mnist$train$x
-y_all <- mnist$train$y
-x_test <- mnist$test$x
-y_test <- mnist$test$y
-
-# reshape and rescale
-if(k_image_data_format() == 'channels_first'){
-  x_all <- array_reshape(x_all, c(nrow(x_all), 1, img_rows, img_cols)) / 255
-  x_test <- array_reshape(x_test, c(nrow(x_test), 1, img_rows, img_cols)) / 255
-} else{
-  x_all <- array_reshape(x_all, c(nrow(x_all), img_rows, img_cols, 1)) / 255
-  x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 1)) / 255
+create_initial_train <- function(y_all, seed = 2018){
+  set.seed(seed)
+  n = 2
+  
+  y_temp = tibble(y = y_all) %>% 
+    mutate(ix = 1:nrow(.)) %>% 
+    arrange(y)
+  
+  indices_df = map_df(0:9, function(i){
+    filt = y_temp %>% 
+      filter(y == i)
+    out = tibble(y = rep(as.integer(i), n),
+                 ix = sample(filt$ix, n))
+    return(out)
+  })  
+  return(indices_df$ix)
 }
 
-# convert class vectors to binary class matrices
-y_all_cat = to_categorical(y_all, num_classes)
-y_test_cat = to_categorical(y_test, num_classes)
 
-cat("Converted class vectors\n")
-
+create_initial_pool_train_val <- function(y_all, seed = 2018){
+  set.seed(seed)
+  ix_train = create_initial_train(y_all, seed)
+  available_idx = setdiff(1:length(y_all), ix_train)
+  shuffled_indices = sample(available_idx, length(available_idx))
+  ix_val = shuffled_indices[1:100]
+  ix_pool = shuffled_indices[101:length(shuffled_indices)]  
+  return(list(
+    ix_train = ix_train,
+    ix_val = ix_val,
+    ix_pool = ix_pool
+  ))
+}
 
 acquire_observations <- function(
   acq_fun, n_acq_steps, 
@@ -171,82 +175,11 @@ acquire_observations <- function(
       ix_train = c(train_pool_ix[[i]]$ix_train, train_pool_ix[[i]]$id_highest_uncertainty)
       ix_pool = setdiff(train_pool_ix[[i]]$ix_pool, train_pool_ix[[i]]$id_highest_uncertainty)
     }
-
-    
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")
-  
 }
 
 
-#acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
-
-# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# set.seed(2018)
-# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-ix_train = shuffled_indices[1:20]
-ix_val = shuffled_indices[21:120]
-ix_pool = shuffled_indices[121:length(shuffled_indices)]
-
-
-# Run funciton for predictive entropy
-acquire_observations(
-  acq_fun = 'predictive_entropy', 
-  n_acq_steps = 100, 
-  ix_train = ix_train, 
-  ix_val = ix_val, 
-  ix_pool = ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  nb_MC_samples = 100)
-  
-
-# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# set.seed(2018)
-# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-ix_train = shuffled_indices[1:20]
-ix_val = shuffled_indices[21:120]
-ix_pool = shuffled_indices[121:length(shuffled_indices)]
-
-  
-# Run funciton for variation ratios
-acquire_observations(
-  acq_fun = 'var_ratios', 
-  n_acq_steps = 100, 
-  ix_train = ix_train, 
-  ix_val = ix_val, 
-  ix_pool = ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  nb_MC_samples = 100)
-
-
-# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# set.seed(2018)
-# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-ix_train = shuffled_indices[1:20]
-ix_val = shuffled_indices[21:120]
-ix_pool = shuffled_indices[121:length(shuffled_indices)]
-
-# Run funciton for BALD
-acquire_observations(
-  acq_fun = 'bald', 
-  n_acq_steps = 100, 
-  ix_train = ix_train, 
-  ix_val = ix_val, 
-  ix_pool = ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  nb_MC_samples = 100)
 
 
 random_acquisition <- function(
@@ -358,35 +291,140 @@ random_acquisition <- function(
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
       cat("\t\t\tAccuracies saved.\n\n")
-      
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
       cat("\t\t\tIndex file exists\n")
       ix_train = c(train_pool_ix[[i]]$ix_train, train_pool_ix[[i]]$new_train_examples)
       ix_pool = setdiff(train_pool_ix[[i]]$ix_pool, train_pool_ix[[i]]$new_train_examples)
     }
-    
-    
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")  
 }
 
 
+#################################################################################
+#################################################################################
+## Source python scripts
+#################################################################################
+#################################################################################
+
+np <- import("numpy")
+source_python("utils.py")
+source_python("utils_MNIST.py")
+
+#################################################################################
+#################################################################################
+## Create variables
+#################################################################################
+#################################################################################
+
+num_classes = 10
+batch_size = 128
+epochs = 50
+
+# input image dimensions
+img_rows = 28 
+img_cols = 28
+
+#################################################################################
+#################################################################################
+## Load dataset and reshape
+#################################################################################
+#################################################################################
+
+mnist <- dataset_mnist()
+
+x_all <- mnist$train$x
+y_all <- mnist$train$y
+x_test <- mnist$test$x
+y_test <- mnist$test$y
+
+# reshape and rescale
+if(k_image_data_format() == 'channels_first'){
+  x_all <- array_reshape(x_all, c(nrow(x_all), 1, img_rows, img_cols)) / 255
+  x_test <- array_reshape(x_test, c(nrow(x_test), 1, img_rows, img_cols)) / 255
+} else{
+  x_all <- array_reshape(x_all, c(nrow(x_all), img_rows, img_cols, 1)) / 255
+  x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 1)) / 255
+}
+
+# convert class vectors to binary class matrices
+y_all_cat = to_categorical(y_all, num_classes)
+y_test_cat = to_categorical(y_test, num_classes)
+
+cat("Converted class vectors\n")
+
+
+#################################################################################
+#################################################################################
+## Active Learning
+#################################################################################
+#################################################################################
+
+#acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
 
 # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# set.seed(2018)
-# shuffled_indices = sample(1:nrow(x_all), nrow(x_all))
-shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-ix_train = shuffled_indices[1:20]
-ix_val = shuffled_indices[21:120]
-ix_pool = shuffled_indices[121:length(shuffled_indices)]
+# shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
+# ix_train = shuffled_indices[1:20]
+# ix_val = shuffled_indices[21:120]
+# ix_pool = shuffled_indices[121:length(shuffled_indices)]
+initial_pool_train_val = create_initial_pool_train_val(y_all, 2018)
+
+ix_train = initial_pool_train_val$ix_train
+ix_val = initial_pool_train_val$ix_val
+ix_pool = initial_pool_train_val$ix_pool
+
+
+
+
+
+# Run funciton for predictive entropy
+acquire_observations(
+  acq_fun = 'predictive_entropy', 
+  n_acq_steps = 100, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100)
+  
+
+# Run funciton for variation ratios
+acquire_observations(
+  acq_fun = 'var_ratios', 
+  n_acq_steps = 100, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100)
+
+# Run funciton for BALD
+acquire_observations(
+  acq_fun = 'bald', 
+  n_acq_steps = 100, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  nb_MC_samples = 100)
+
 
 # Run funciton for random acquisition
 random_acquisition(
   n_acq_steps = 100, 
-  ix_train = ix_train, 
-  ix_val = ix_val, 
-  ix_pool = ix_pool, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
   x_all = x_all, 
   y_all = y_all, 
   x_test = x_test, 
