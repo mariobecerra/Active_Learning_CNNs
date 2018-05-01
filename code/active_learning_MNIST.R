@@ -37,8 +37,6 @@ y_test_cat = to_categorical(y_test, num_classes)
 cat("Converted class vectors\n")
 
 
-model = MNIST_model()
-
 acquire_observations <- function(
   acq_fun, n_acq_steps, 
   ix_train, ix_val, ix_pool, 
@@ -70,19 +68,20 @@ acquire_observations <- function(
   } else {
     # Otherwise, create empty list
     train_pool_ix = vector("list", length = n_acq_steps)
-    names(train_pool_ix) = paste0("iter_", 0:(n_acq_steps - 1)) 
+    names(train_pool_ix) = paste0("iter_", stringr::str_pad(1:n_acq_steps, 3, pad = "0")) 
     saveRDS(train_pool_ix, train_pool_ix_file_name)
   }
   
   # Begin loop
-  for(i in 0:(n_acq_steps - 1)){
-    MNIST_samples_file_name = paste0(dest_folder, "MNIST_samples_", acq_fun, "_", i, ".npy")
-    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i, ".npy")
-    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i, '.h5')
+  for(i in 1:n_acq_steps){
+    i_str = stringr::str_pad(i, 3, pad = "0")
+    MNIST_samples_file_name = paste0(dest_folder, "MNIST_samples_", acq_fun, "_", i_str, ".npy")
+    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i_str, ".npy")
+    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i_str, '.h5')
     
     cat("\t\tIter:", i, "\n")
     
-    if(is.null(train_pool_ix[[i+1]])){
+    if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
       # we gotta compute uncertainties to get new examples
       x_train = x_all[ix_train, , , , drop = F]
@@ -95,7 +94,9 @@ acquire_observations <- function(
           model = load_model_hdf5(model_file_name)
         } else {
           # If model file doesn't exist, then fit the model
-          model %>% 
+          n_train = dim(x_train)[1]
+          model = MNIST_model(n_train)
+          history = model %>% 
             fit(
               x_train, y_train,
               batch_size = batch_size,
@@ -105,6 +106,7 @@ acquire_observations <- function(
             )
           cat("\t\t\tSaving model to ", model_file_name, "\n")
           save_model_hdf5(model, model_file_name)
+          saveRDS(history, paste0(dest_folder, "MNIST_train_history_", acq_fun, "_", i_str, '.rds'))
         }
         # Compute MC samples
         cat("\t\t\tComputing pool samples\n")
@@ -128,7 +130,7 @@ acquire_observations <- function(
       # get the 10 points with highest entropy value
       id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10] 
       # Save indices for this iteration
-      train_pool_ix[[i+1]] = list(
+      train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
         ix_train = ix_train,
         id_highest_uncertainty = id_highest_uncertainty
@@ -157,7 +159,7 @@ acquire_observations <- function(
       test_preds = predict_MC(MC_samples_test)
       
       accuracy = mean(y_test == test_preds)
-      accuracies[i+1, 2] = accuracy
+      accuracies[i, 2] = accuracy
       cat("\t\t\tAccuracy computed\n\n\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
@@ -166,8 +168,8 @@ acquire_observations <- function(
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
       cat("\t\t\tIndex file exists\n")
-      ix_train = c(train_pool_ix[[i+1]]$ix_train, train_pool_ix[[i+1]]$id_highest_uncertainty)
-      ix_pool = setdiff(train_pool_ix[[i+1]]$ix_pool, train_pool_ix[[i+1]]$id_highest_uncertainty)
+      ix_train = c(train_pool_ix[[i]]$ix_train, train_pool_ix[[i]]$id_highest_uncertainty)
+      ix_pool = setdiff(train_pool_ix[[i]]$ix_pool, train_pool_ix[[i]]$id_highest_uncertainty)
     }
 
     
@@ -282,18 +284,19 @@ random_acquisition <- function(
   } else {
     # Otherwise, create empty list
     train_pool_ix = vector("list", length = n_acq_steps)
-    names(train_pool_ix) = paste0("iter_", 0:(n_acq_steps - 1)) 
+    names(train_pool_ix) = paste0("iter_", stringr::str_pad(1:n_acq_steps, 3, pad = "0")) 
     saveRDS(train_pool_ix, train_pool_ix_file_name)
   }
   
   # Begin loop
-  for(i in 0:(n_acq_steps - 1)){
-    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i, ".npy")
-    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i, '.h5')
+  for(i in 1:n_acq_steps){
+    i_str = stringr::str_pad(i, 3, pad = "0")
+    MNIST_samples_test_file_name = paste0(dest_folder, "MNIST_samples_test_", acq_fun, "_", i_str, ".npy")
+    model_file_name = paste0(dest_folder, "MNIST_model_", acq_fun, "_", i_str, '.h5')
     
     cat("\t\tIter:", i, "\n")
     
-    if(is.null(train_pool_ix[[i+1]])){
+    if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
       # we gotta compute uncertainties to get new examples
       x_train = x_all[ix_train, , , , drop = F]
@@ -305,7 +308,7 @@ random_acquisition <- function(
         model = load_model_hdf5(model_file_name)
       } else {
         # If model file doesn't exist, then fit the model
-        model %>% 
+        history = model %>% 
           fit(
             x_train, y_train,
             batch_size = batch_size,
@@ -315,12 +318,13 @@ random_acquisition <- function(
           )
         cat("\t\t\tSaving model to ", model_file_name, "\n")
         save_model_hdf5(model, model_file_name)
+        saveRDS(history, paste0(dest_folder, "MNIST_train_history_", acq_fun, "_", i_str, '.rds'))
       }
       
       new_train_examples = sample(ix_pool, 10)
       
       # Save indices for this iteration
-      train_pool_ix[[i+1]] = list(
+      train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
         ix_train = ix_train,
         new_train_examples = new_train_examples
@@ -349,7 +353,7 @@ random_acquisition <- function(
       test_preds = predict_MC(MC_samples_test)
       
       accuracy = mean(y_test == test_preds)
-      accuracies[i+1, 2] = accuracy
+      accuracies[i, 2] = accuracy
       cat("\t\t\tAccuracy computed\n\n\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
@@ -358,8 +362,8 @@ random_acquisition <- function(
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
       cat("\t\t\tIndex file exists\n")
-      ix_train = c(train_pool_ix[[i+1]]$ix_train, train_pool_ix[[i+1]]$new_train_examples)
-      ix_pool = setdiff(train_pool_ix[[i+1]]$ix_pool, train_pool_ix[[i+1]]$new_train_examples)
+      ix_train = c(train_pool_ix[[i]]$ix_train, train_pool_ix[[i]]$new_train_examples)
+      ix_pool = setdiff(train_pool_ix[[i]]$ix_pool, train_pool_ix[[i]]$new_train_examples)
     }
     
     
