@@ -1,10 +1,10 @@
-def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
-  seed = int(seed)
-  nrow = int(nrow)
-  indices = np.arange(0, nrow)
-  np.random.seed(seed)
-  shuffled_indices = np.random.permutation(indices)
-  return shuffled_indices
+# def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
+#   seed = int(seed)
+#   nrow = int(nrow)
+#   indices = np.arange(0, nrow)
+#   np.random.seed(seed)
+#   shuffled_indices = np.random.permutation(indices)
+#   return shuffled_indices
 
 
 def MNIST_model(n_train):
