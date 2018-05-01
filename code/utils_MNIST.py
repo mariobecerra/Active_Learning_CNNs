@@ -1,4 +1,4 @@
-def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
+  def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
   seed = int(seed)
   nrow = int(nrow)
   indices = np.arange(0, nrow)
@@ -9,29 +9,50 @@ def create_shuffled_indices_MNIST(seed = 2018, nrow = 60000):
 
 def MNIST_model():
   img_rows, img_cols = 28, 28
+  # number of convolutional filters to use
+  nb_filters = 32
+  # size of pooling area for max pooling
+  nb_pool = 2
+  # convolution kernel size
+  nb_conv = 3
+
+  num_classes = 10
+
+  # specify input shape
   if K.image_data_format() == 'channels_first':
     input_shape = (1, img_rows, img_cols)
   else:
     input_shape = (img_rows, img_cols, 1)
   
-  num_classes = 10
+  
 
   # Specify architecture
   model = Sequential()
-  model.add(Conv2D(32, kernel_size=(3, 3),
-                   activation='relu',
-                   input_shape=input_shape))
-  model.add(Conv2D(64, (3, 3), activation='relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='valid', input_shape=(1, img_rows, img_cols)))
+  model.add(Activation('relu'))
+  model.add(Convolution2D(nb_filters, nb_conv, nb_conv))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
   model.add(Dropout(0.25))
+
+  model.add(Convolution2D(nb_filters*2, nb_conv, nb_conv, border_mode='valid', input_shape=(1, img_rows, img_cols)))
+  model.add(Activation('relu'))
+  model.add(Convolution2D(nb_filters*2, nb_conv, nb_conv))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
+  model.add(Dropout(0.25))
+
+  c = 2.5
+  Weight_Decay = c / float(X_train.shape[0])
   model.add(Flatten())
-  model.add(Dense(128, activation='relu'))
+  model.add(Dense(128, W_regularizer=l2(Weight_Decay)))
+  model.add(Activation('relu'))
   model.add(Dropout(0.5))
-  model.add(Dense(num_classes, activation='softmax'))
-  
-  model.compile(loss=keras.losses.categorical_crossentropy,
-                optimizer=keras.optimizers.Adadelta(),
-                metrics=['accuracy'])
+  model.add(Dense(nb_classes))
+  model.add(Activation('softmax'))
+
+  # compile model
+  model.compile(loss='categorical_crossentropy', optimizer='adam')
   
   print("Compiled model")
   return(model)
