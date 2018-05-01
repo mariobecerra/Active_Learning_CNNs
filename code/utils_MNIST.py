@@ -52,7 +52,7 @@ def MNIST_model(n_train):
   model.add(Activation('softmax'))
 
   # compile model
-  model.compile(loss='categorical_crossentropy', optimizer='adam')
+  model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
   
   print("Compiled model")
   return(model)
