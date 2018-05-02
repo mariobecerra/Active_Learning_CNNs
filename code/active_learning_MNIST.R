@@ -46,34 +46,42 @@ acquire_observations <- function(
   ix_train, ix_val, ix_pool, 
   x_all, y_all, 
   x_test, y_test, 
+  n_epochs = 50,
   nb_MC_samples = 100){
   
   dir.create("../out/MNIST/", showWarnings = F)
   dest_folder = paste0("../out/MNIST/", acq_fun, "/")
   dir.create(dest_folder)
   
-  accuracies_file_name = paste0(dest_folder, "MNIST_", acq_fun, "_accuracies_so_far.csv")
+  accuracies_file_name = paste0(dest_folder, "MNIST_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
   
   x_val = x_all[ix_val, , , , drop = F]
   y_val = y_all_cat[ix_val, ]
   
   if(file.exists(accuracies_file_name)){
-    accuracies <- read_csv(accuracies_file_name, col_types = cols(col_character(), col_double())) 
+    cat("\tReading accuracies csv file (", accuracies_file_name, ")\n")
+    accuracies <- read_csv(accuracies_file_name, col_types = cols(col_character(), col_double(), col_integer())) 
   } else{
+    cat("\tCreating accuracies dataframe\n")
     accuracies = tibble(acq_fun = acq_fun,
-                        accuracy = rep(NA, n_acq_steps))  
+                        accuracy = rep(NA, n_acq_steps)) %>% 
+      mutate(iter = 1:nrow(.)) 
     write_csv(accuracies, accuracies_file_name)
+    cat("\tAccuracies csv file created and saved in", accuracies_file_name, "\n")
   }
   
   if(file.exists(train_pool_ix_file_name)) {
     # If file with the indices of each iteration exists, load it
+    cat("\tReading train_pool_ix rds file (", train_pool_ix_file_name, ")\n")
     train_pool_ix = readRDS(train_pool_ix_file_name)
   } else {
     # Otherwise, create empty list
+    cat("\tCreating train_pool_ix list\n")
     train_pool_ix = vector("list", length = n_acq_steps)
     names(train_pool_ix) = paste0("iter_", stringr::str_pad(1:n_acq_steps, 3, pad = "0")) 
     saveRDS(train_pool_ix, train_pool_ix_file_name)
+    cat("\tRDS file train_pool_ix saved in", train_pool_ix_file_name, "\n")
   }
   
   # Begin loop
@@ -100,27 +108,34 @@ acquire_observations <- function(
           # If model file doesn't exist, then fit the model
           n_train = dim(x_train)[1]
           model = MNIST_model(n_train)
+          cat("\t\t\tTraining model with", n_train, "samples...")
           history = model %>% 
             fit(
               x_train, y_train,
               batch_size = batch_size,
-              epochs = 50,
-              verbose = 1,
+              epochs = n_epochs,
+              verbose = 0,
               validation_data = list(x_val, y_val)
             )
-          cat("\t\t\tSaving model to ", model_file_name, "\n")
+          cat("Training finished\n")
+          cat("\t\t\t\tTraining accuracy:", history$metrics$acc[n_epochs], "\n")
+          cat("\t\t\t\tValidation accuracy:", history$metrics$val_acc[n_epochs], "\n")
+          cat("\t\t\tSaving model in", model_file_name, "\n")
           save_model_hdf5(model, model_file_name)
           saveRDS(history, paste0(dest_folder, "MNIST_train_history_", acq_fun, "_", i_str, '.rds'))
+          cat("\t\t\tModel saved in", model_file_name, "and history RDS file created\n")
         }
         # Compute MC samples
         cat("\t\t\tComputing pool samples\n")
         MC_samples = get_mc_predictions(model, x_all[ix_pool, , , , drop = F], nb_iter = nb_MC_samples, batch_size = 256)
-        cat("\t\t\tSaving pool samples to ", MNIST_samples_file_name, "\n")
+        cat("\t\t\tSaving pool samples in", MNIST_samples_file_name, "\n")
         np$save(MNIST_samples_file_name, MC_samples)
+        cat("\t\t\tPool samples saved in", MNIST_samples_file_name, "\n")
       } else {
         # If there is an MC samples file, then just load it
         cat("\t\t\tLoading pool samples from ", MNIST_samples_file_name, "\n")
         MC_samples = np$load(MNIST_samples_file_name)
+        cat("\t\t\tSamples loaded ", MNIST_samples_file_name, "\n")
       }
       
       # Compute uncertainties
@@ -140,6 +155,7 @@ acquire_observations <- function(
         id_highest_uncertainty = id_highest_uncertainty
       )
       saveRDS(train_pool_ix, train_pool_ix_file_name)
+      cat("\t\t\tRDS file train_pool_ix updated\n")
       
       # Update pool and train indices
       ix_train = c(ix_train, id_highest_uncertainty)
@@ -156,15 +172,16 @@ acquire_observations <- function(
       } else{
         cat("\t\t\tComputing test samples\n")
         MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
-        cat("\t\t\tSaving test samples to", MNIST_samples_test_file_name, "\n")
+        cat("\t\t\tSaving test samples in", MNIST_samples_test_file_name, "\n")
         np$save(MNIST_samples_test_file_name, MC_samples_test)
+        cat("\t\t\tTest samples saved in", MNIST_samples_test_file_name, "\n")
       }
       
       test_preds = predict_MC(MC_samples_test)
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
-      cat("\t\t\tAccuracy computed\n\n\n")
+      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n\n\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
       cat("\t\t\tAccuracies saved.\n\n")
@@ -188,6 +205,7 @@ random_acquisition <- function(
   x_all, y_all, 
   x_test, y_test, 
   nb_MC_samples = 100,
+  n_epochs = 50,
   seed = 201804){
   
   set.seed(seed)
@@ -197,28 +215,35 @@ random_acquisition <- function(
   dest_folder = paste0("../out/MNIST/random_acq/")
   dir.create(dest_folder)
   
-  accuracies_file_name = paste0(dest_folder, "MNIST_", acq_fun, "_accuracies_so_far.csv")
+  accuracies_file_name = paste0(dest_folder, "MNIST_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
   
   x_val = x_all[ix_val, , , , drop = F]
   y_val = y_all_cat[ix_val, ]
   
   if(file.exists(accuracies_file_name)){
-    accuracies <- read_csv(accuracies_file_name, col_types = cols(col_character(), col_double())) 
+    cat("\tReading accuracies csv file (", accuracies_file_name, ")\n")
+    accuracies <- read_csv(accuracies_file_name, col_types = cols(col_character(), col_double(), col_integer())) 
   } else{
+    cat("\tCreating accuracies dataframe\n")
     accuracies = tibble(acq_fun = acq_fun,
-                        accuracy = rep(NA, n_acq_steps))  
+                        accuracy = rep(NA, n_acq_steps)) %>% 
+      mutate(iter = 1:nrow(.))
     write_csv(accuracies, accuracies_file_name)
+    cat("\tAccuracies csv file created and saved in", accuracies_file_name, "\n")
   }
   
   if(file.exists(train_pool_ix_file_name)) {
     # If file with the indices of each iteration exists, load it
+    cat("\tReading train_pool_ix rds file (", train_pool_ix_file_name, ")\n")
     train_pool_ix = readRDS(train_pool_ix_file_name)
   } else {
     # Otherwise, create empty list
+    cat("\tCreating train_pool_ix list\n")
     train_pool_ix = vector("list", length = n_acq_steps)
     names(train_pool_ix) = paste0("iter_", stringr::str_pad(1:n_acq_steps, 3, pad = "0")) 
     saveRDS(train_pool_ix, train_pool_ix_file_name)
+    cat("\tRDS file train_pool_ix saved in", train_pool_ix_file_name, "\n")
   }
   
   # Begin loop
@@ -241,17 +266,24 @@ random_acquisition <- function(
         model = load_model_hdf5(model_file_name)
       } else {
         # If model file doesn't exist, then fit the model
+        n_train = dim(x_train)[1]
+        model = MNIST_model(n_train)
+        cat("\t\t\tTraining model with", n_train, "samples...")
         history = model %>% 
           fit(
             x_train, y_train,
             batch_size = batch_size,
-            epochs = 50,
-            verbose = 1,
+            epochs = n_epochs,
+            verbose = 0,
             validation_data = list(x_val, y_val)
           )
-        cat("\t\t\tSaving model to ", model_file_name, "\n")
+        cat("Training finished\n")
+        cat("\t\t\t\tTraining accuracy:", history$metrics$acc[n_epochs], "\n")
+        cat("\t\t\t\tValidation accuracy:", history$metrics$val_acc[n_epochs], "\n")
+        cat("\t\t\tSaving model in", model_file_name, "\n")
         save_model_hdf5(model, model_file_name)
         saveRDS(history, paste0(dest_folder, "MNIST_train_history_", acq_fun, "_", i_str, '.rds'))
+        cat("\t\t\tModel saved in", model_file_name, "and history RDS file created\n")
       }
       
       new_train_examples = sample(ix_pool, 10)
@@ -279,15 +311,16 @@ random_acquisition <- function(
       } else{
         cat("\t\t\tComputing test samples\n")
         MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
-        cat("\t\t\tSaving test samples to", MNIST_samples_test_file_name, "\n")
+        cat("\t\t\tSaving test samples in", MNIST_samples_test_file_name, "\n")
         np$save(MNIST_samples_test_file_name, MC_samples_test)
+        cat("\t\t\tTest samples saved in", MNIST_samples_test_file_name, "\n")
       }
       
       test_preds = predict_MC(MC_samples_test)
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
-      cat("\t\t\tAccuracy computed\n\n\n")
+      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n\n\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
       cat("\t\t\tAccuracies saved.\n\n")
@@ -320,7 +353,6 @@ source_python("utils_MNIST.py")
 
 num_classes = 10
 batch_size = 128
-epochs = 50
 
 # input image dimensions
 img_rows = 28 
@@ -389,7 +421,8 @@ acquire_observations(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 100)
+  n_epochs = 50,
+  nb_MC_samples = 20)
   
 
 # Run funciton for variation ratios
@@ -403,7 +436,10 @@ acquire_observations(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 100)
+  n_epochs = 50,
+  #nb_MC_samples = 100
+  nb_MC_samples = 20
+  )
 
 # Run funciton for BALD
 acquire_observations(
@@ -416,7 +452,8 @@ acquire_observations(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 100)
+  n_epochs = 50,
+  nb_MC_samples = 20)
 
 
 # Run funciton for random acquisition
@@ -429,5 +466,6 @@ random_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 100,
+  nb_MC_samples = 20,
+  n_epochs = 50,
   seed = 201804)
