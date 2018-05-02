@@ -286,7 +286,10 @@ random_acquisition <- function(
         cat("\t\t\tModel saved in", model_file_name, "and history RDS file created\n")
       }
       
-      new_train_examples = sample(ix_pool, 10)
+      # No need to sample cuz ix_pool is already shuffled
+      # If I sample, then results change each time I run this
+      #new_train_examples = sample(ix_pool, 10)
+      new_train_examples = ix_pool[1:10]
       
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
