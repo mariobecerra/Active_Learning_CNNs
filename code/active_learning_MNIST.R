@@ -138,3 +138,18 @@ acquire_observations(
   y_test = y_test, 
   n_epochs = 50,
   nb_MC_samples = 20)
+
+
+
+# Run funciton for FREQUENTIST var ratios
+frequentist_acquisition(
+  acq_fun = 'freq_var_ratios', 
+  n_acq_steps = 100, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  n_epochs = 50)
