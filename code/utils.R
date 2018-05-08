@@ -45,7 +45,7 @@ acquire_observations <- function(
   n_epochs = 50,
   nb_MC_samples = 100){
   
-  pool_subset = 2000
+  pool_subset = 5000
   
   dir.create("../out/MNIST/", showWarnings = F)
   dest_folder = paste0("../out/MNIST/", acq_fun, "/")
@@ -495,7 +495,7 @@ frequentist_acquisition <- function(
   x_test, y_test, 
   n_epochs = 50){
   
-  pool_subset = 2000
+  pool_subset = 5000
   
   dir.create("../out/MNIST/", showWarnings = F)
   dest_folder = paste0("../out/MNIST/", acq_fun, "/")
@@ -580,16 +580,14 @@ frequentist_acquisition <- function(
       frequentist_predictions = predict(model, x_all[ix_pool_sample, , , , drop = F], batch_size = 256)
       # MC_samples = get_mc_predictions(model, x_all[ix_pool, , , , drop = F], nb_iter = nb_MC_samples, batch_size = 256)
       
-      # # Compute uncertainties
-      # if(acq_fun == 'freq_predictive_entropy')
-      #   acq_func_values = predictive_entropy(MC_samples)
+      # Compute uncertainties
+      if(acq_fun == 'freq_predictive_entropy'){
+        # - np.sum(np.log(p_y_c + 1e-10)*p_y_c, axis = 1)
+        acq_func_values = -apply(log(frequentist_predictions + 1e-10)*frequentist_predictions, 1, sum)
+      }
       if(acq_fun == 'freq_var_ratios'){
         acq_func_values = 1 - apply(frequentist_predictions, 1, max)
-      } else{
-        cat("\n\nWRONG ACQUISITION FUNCTION!!\n\n")
-        break
-      }
-        
+      } 
       # if(acq_fun == 'freq_bald')
       #   acq_func_values = BALD(MC_samples)
       
