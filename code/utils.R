@@ -148,7 +148,9 @@ acquire_observations <- function(
         acq_func_values = BALD(MC_samples)
       
       # get the 10 points with highest entropy value
-      id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10] 
+      #### HABÍA PROBLEMAS CON LOS ÍNDICES!!!!
+      ## id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10]
+      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:10]]
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
@@ -587,7 +589,9 @@ frequentist_acquisition <- function(
       #   acq_func_values = BALD(MC_samples)
       
       # get the 10 points with highest entropy value
-      id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10] 
+      #### HABÍA PROBLEMAS CON LOS ÍNDICES!!!!
+      ## id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10]
+      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:10]]
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
