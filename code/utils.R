@@ -186,10 +186,10 @@ acquire_observations <- function(
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
-      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n\n\n")
+      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
-      cat("\t\t\tAccuracies saved.\n\n")
+      cat("Accuracies saved.\n\n")
       
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
@@ -330,10 +330,10 @@ random_acquisition_old <- function(
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
-      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n\n\n")
+      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
-      cat("\t\t\tAccuracies saved.\n\n")
+      cat("Accuracies saved.\n\n")
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
       cat("\t\t\tIndex file exists\n")
@@ -630,10 +630,10 @@ frequentist_acquisition <- function(
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
-      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n\n\n")
+      cat("\t\t\tAccuracy for this iteration:", accuracy, "\n")
       cat("\t\t\tSaving accuracies so far...")
       write_csv(accuracies, accuracies_file_name)
-      cat("\t\t\tAccuracies saved.\n\n")
+      cat("Accuracies saved.\n\n")
       
     } else {
       # If the ith element isn't null means that uncertainties have been previously computed
