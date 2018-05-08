@@ -87,7 +87,6 @@ random_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 100,
   n_epochs = 50,
   seed = 201804)
 
