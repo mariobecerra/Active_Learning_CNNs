@@ -8,6 +8,7 @@ from keras.regularizers import l2
 from keras import backend as K
 from tqdm import tqdm
 import numpy as np
+from scipy.stats import mode
 
 ####################################################
 ## MC predictions (dropout at prediction time)
@@ -65,8 +66,15 @@ def predictive_entropy(MC_samples):
     return pred_entropy
 
 
-
 def variation_ratios(MC_samples):
+    pred_classes = np.argmax(MC_samples, axis = 2)
+    #modes, counts = scipy.stats.mode(pred_classes, axis = 0)
+    modes, counts = mode(pred_classes, axis = 0)
+    var_ratios = 1 - counts/float(MC_samples.shape[0])
+    out = var_ratios.flatten()
+    return out
+    
+def variation_ratios_old(MC_samples):
     p_y_c = np.mean(MC_samples, axis=0)
     var_ratios = 1 - np.max(p_y_c, axis = 1)
     return var_ratios
