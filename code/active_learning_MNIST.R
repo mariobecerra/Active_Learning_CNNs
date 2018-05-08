@@ -87,7 +87,7 @@ random_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 50,
+  nb_MC_samples = 100,
   n_epochs = 50,
   seed = 201804)
 
@@ -107,7 +107,7 @@ acquire_observations(
   y_test = y_test, 
   n_epochs = 50,
   #nb_MC_samples = 100
-  nb_MC_samples = 50
+  nb_MC_samples = 100
   )
 temp = paste0("Finish var ratios: ", as.character(Sys.time()))
 cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
@@ -128,7 +128,7 @@ acquire_observations(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50,
-  nb_MC_samples = 50)
+  nb_MC_samples = 100)
 temp = paste0("Finish BALD: ", as.character(Sys.time()))
 cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
@@ -149,14 +149,15 @@ acquire_observations(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50,
-  nb_MC_samples = 50)
+  nb_MC_samples = 100)
 temp = paste0("Finish pred ent: ", as.character(Sys.time()))
 cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
 
 
 
-
+temp = paste0("Start FREQUENTIST var ratios: ", as.character(Sys.time()))
+cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for FREQUENTIST var ratios
 frequentist_acquisition(
   acq_fun = 'freq_var_ratios', 
@@ -168,6 +169,28 @@ frequentist_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  n_epochs = 100)
+  n_epochs = 50)
+temp = paste0("Finish FREQUENTIST var ratios: ", as.character(Sys.time()))
+cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
-cat(as.character(Sys.time()), file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
+
+
+
+temp = paste0("Start FREQUENTIST predictive entropy: ", as.character(Sys.time()))
+cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
+# Run funciton for FREQUENTIST predictive entropy
+frequentist_acquisition(
+  acq_fun = 'freq_predictive_entropy', 
+  n_acq_steps = 100, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  n_epochs = 50)
+temp = paste0("Finish FREQUENTIST predictive entropy: ", as.character(Sys.time()))
+cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
+
+# cat(as.character(Sys.time()), file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
