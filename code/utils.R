@@ -495,6 +495,8 @@ frequentist_acquisition <- function(
   x_test, y_test, 
   n_epochs = 50){
   
+  pool_subset = 2000
+  
   dir.create("../out/MNIST/", showWarnings = F)
   dest_folder = paste0("../out/MNIST/", acq_fun, "/")
   dir.create(dest_folder)
@@ -570,9 +572,12 @@ frequentist_acquisition <- function(
         saveRDS(history, paste0(dest_folder, "MNIST_train_history_", acq_fun, "_", i_str, '.rds'))
         cat("\t\t\tModel saved in", model_file_name, "and history RDS file created\n")
       }
+      
+      ix_pool_sample = sample(ix_pool, pool_subset)
+      
       # Compute pool predictions
       cat("\t\t\tComputing pool predictions\n")
-      frequentist_predictions = predict(model, x_all[ix_pool, , , , drop = F], batch_size = 256)
+      frequentist_predictions = predict(model, x_all[ix_pool_sample, , , , drop = F], batch_size = 256)
       # MC_samples = get_mc_predictions(model, x_all[ix_pool, , , , drop = F], nb_iter = nb_MC_samples, batch_size = 256)
       
       # # Compute uncertainties
