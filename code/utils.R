@@ -165,24 +165,24 @@ acquire_observations <- function(
       ix_train = c(ix_train, id_highest_uncertainty)
       ix_pool = setdiff(ix_pool, id_highest_uncertainty)
       
-      # # This should be thought through:
-      # # if the id's of highest uncertainty examples have been computed but the test
-      # # predictions haven't been made, then accuracies won't be computed.
-      # # But this case won't likely happen.
-      # if(file.exists(MNIST_samples_test_file_name)){
-      #   # test set MC samples file exists
-      #   cat("\t\t\tLoading test samples from", MNIST_samples_test_file_name, "\n")
-      #   MC_samples_test = np$load(MNIST_samples_test_file_name)
-      # } else{
-      #   cat("\t\t\tComputing test samples\n")
-      #   MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
-      #   cat("\t\t\tSaving test samples in", MNIST_samples_test_file_name, "\n")
-      #   np$save(MNIST_samples_test_file_name, MC_samples_test)
-      #   cat("\t\t\tTest samples saved in", MNIST_samples_test_file_name, "\n")
-      # }
-      # 
-      # test_preds = predict_MC(MC_samples_test)
-      test_preds = predict_classes(model, x_test, batch_size = 256)
+      # This should be thought through:
+      # if the id's of highest uncertainty examples have been computed but the test
+      # predictions haven't been made, then accuracies won't be computed.
+      # But this case won't likely happen.
+      if(file.exists(MNIST_samples_test_file_name)){
+        # test set MC samples file exists
+        cat("\t\t\tLoading test samples from", MNIST_samples_test_file_name, "\n")
+        MC_samples_test = np$load(MNIST_samples_test_file_name)
+      } else{
+        cat("\t\t\tComputing test samples\n")
+        MC_samples_test = get_mc_predictions(model, x_test, nb_iter=nb_MC_samples, batch_size=256)
+        cat("\t\t\tSaving test samples in", MNIST_samples_test_file_name, "\n")
+        np$save(MNIST_samples_test_file_name, MC_samples_test)
+        cat("\t\t\tTest samples saved in", MNIST_samples_test_file_name, "\n")
+      }
+
+      test_preds = predict_MC(MC_samples_test)
+      # test_preds = predict_classes(model, x_test, batch_size = 256)
       
       accuracy = mean(y_test == test_preds)
       accuracies[i, 2] = accuracy
