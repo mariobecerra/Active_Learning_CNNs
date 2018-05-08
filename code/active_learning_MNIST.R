@@ -87,7 +87,7 @@ random_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  nb_MC_samples = 20,
+  nb_MC_samples = 50,
   n_epochs = 50,
   seed = 201804)
 
@@ -107,7 +107,7 @@ acquire_observations(
   y_test = y_test, 
   n_epochs = 50,
   #nb_MC_samples = 100
-  nb_MC_samples = 20
+  nb_MC_samples = 50
   )
 
 # Run funciton for BALD
@@ -122,7 +122,7 @@ acquire_observations(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50,
-  nb_MC_samples = 20)
+  nb_MC_samples = 50)
 
 
 # Run funciton for predictive entropy
@@ -137,7 +137,7 @@ acquire_observations(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50,
-  nb_MC_samples = 20)
+  nb_MC_samples = 50)
 
 
 
@@ -152,4 +152,6 @@ frequentist_acquisition(
   y_all = y_all, 
   x_test = x_test, 
   y_test = y_test, 
-  n_epochs = 50)
+  n_epochs = 100)
+
+cat(as.character(Sys.time()), file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
