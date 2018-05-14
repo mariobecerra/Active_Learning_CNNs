@@ -103,7 +103,12 @@ bbb = image_to_array(image_load("../out/earthquake_folders_data/union_hidalgo/ab
 
 dim(bbb)
 
+predict(model, bbb)
+
 absent_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/absent/")
 present_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/present/")
 
 apply(preds, 1, which.max) 
+
+save_model_hdf5(model, "../out/earthquake_model_1.rds")
+
