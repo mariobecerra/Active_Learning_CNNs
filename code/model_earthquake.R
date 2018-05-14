@@ -6,7 +6,7 @@ model %>%
   layer_conv_2d(filter = 6,
                 kernel_size = c(3, 3),
                 padding = "same",
-                input_shape = c(256, 256, 3)) %>%
+                input_shape = c(322, 322, 3)) %>%
   layer_activation("relu") %>%
   layer_conv_2d(filter = 16, kernel_size = c(6, 6))  %>%
   layer_activation("relu") %>%
@@ -65,22 +65,37 @@ summary(model)
 model %>% 
   fit_generator(
     flow_images_from_directory("../out/earthquake_folders_data/juchitan_de_zaragoza/",
-                               # gen_images,
+                               generator = image_data_generator(rescale=1./255),
+                               target_size = c(322, 322),
                                batch_size = 32),
-    steps_per_epoch = as.integer(500/32),
+    steps_per_epoch = as.integer(200/32),
     epochs = 10,
     validation_data = flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
-                                                 # gen_images,
+                                                 generator = image_data_generator(rescale=1./255),
+                                                 target_size = c(322, 322),
                                                  batch_size = 32))
 
-# preds = predict_generator(model,
-#                   flow_images_from_directory("../out/earthquake_folders_data/union_hidalgo/",
-#                                              batch_size = 20),
-#                   steps = 12,
-#                   verbose = 1)
+ 
+# See here: https://keras.io/models/sequential/62
+# 
+# “steps: Total number of steps (batches of samples) to yield from generator before stopping.”
+# 
+# What this general means for Keras 2 is that steps should be equal to the number of training examples divided by your batch size (trn.n/batch_size). What you are defining is how many batches you are going to predict.
+# 
+# If you have steps=30 and your batch size = 4, you will predict the results for only 120 examples.
+
+preds = predict_generator(model,
+                  flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
+                                             generator = image_data_generator(rescale=1./255),
+                                             target_size = c(322, 322),
+                                             batch_size = 20),
+                  steps = 10,
+                  verbose = 1)
 
 aaa = evaluate_generator(model,
                    flow_images_from_directory("../out/earthquake_folders_data/union_hidalgo/",
+                                              generator = image_data_generator(rescale=1./255),
+                                              target_size = c(322, 322),
                                               batch_size = 20),
                    steps = 10)
 
@@ -88,5 +103,7 @@ bbb = image_to_array(image_load("../out/earthquake_folders_data/union_hidalgo/ab
 
 dim(bbb)
 
+absent_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/absent/")
+present_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/present/")
 
-
+apply(preds, 1, which.max) 
