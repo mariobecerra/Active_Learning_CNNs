@@ -99,6 +99,14 @@ aaa = evaluate_generator(model,
                                               batch_size = 20),
                    steps = 10)
 
+aaa_santa_maria = evaluate_generator(model,
+                         flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
+                                                    generator = image_data_generator(rescale=1./255),
+                                                    target_size = c(322, 322),
+                                                    batch_size = 20),
+                         steps = 10)
+aaa_santa_maria
+
 bbb = image_to_array(image_load("../out/earthquake_folders_data/union_hidalgo/absent/00ceb2ec-4667-4f95-afe6-52fa39423390.jpg"))
 
 dim(bbb)
@@ -108,7 +116,10 @@ predict(model, bbb)
 absent_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/absent/")
 present_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/present/")
 
-apply(preds, 1, which.max) 
+apply(preds, 1, which.max)
 
 save_model_hdf5(model, "../out/earthquake_model_1.rds")
 
+
+
+model = load_model_hdf5("../out/earthquake_model_1.rds")
