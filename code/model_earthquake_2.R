@@ -35,6 +35,9 @@ predictions <- base_model$output %>%
   #             activity_regularizer = regularizer_l2(l = 0.01)) %>%
   # layer_activation("relu", trainable = T) %>%
   # layer_dropout(0.5, trainable = T) %>%
+  layer_dense(16, trainable = T) %>%
+  layer_activation("relu", trainable = T) %>%
+  layer_dropout(0.5, trainable = T) %>%
   # layer_dense(2, trainable = T,
   #             activity_regularizer = regularizer_l2(l = 0.01)) %>%
   layer_dense(2, trainable = T) %>%
@@ -86,7 +89,7 @@ hist = model %>%
   fit_generator(
     train_generator,
     steps_per_epoch = as.integer(train_samples/batch_size),
-    epochs = 100,
+    epochs = 50,
     validation_data = validation_generator,
     validation_steps = as.integer(validation_samples/batch_size),
     verbose = 2)
@@ -106,6 +109,23 @@ hist_df <- hist$metrics %>%
 write_csv(hist_df, paste0("../out/earthquake_models/metrics_history_earthquake_model_", time_file, ".csv"))
 keras::save_model_hdf5(model, paste0("../out/earthquake_models/earthquake_model_", time_file, ".hdf5"))
 
+theme_set(theme_bw())
+
+hist_df %>% select(epoch, acc, val_acc) %>% gather(key, value, -epoch) %>% 
+  ggplot(aes(epoch, value, color = key)) + geom_point() + geom_line()
 
 
+bbb = image_to_array(image_load("../out/earthquake_folders_data_resized/union_hidalgo/absent/00ceb2ec-4667-4f95-afe6-52fa39423390.jpg"))
 
+dim(bbb)
+
+bbb2 = array(bbb, dim = c(1, 224, 224, 3))
+dim(bbb2)
+
+predict(model, bbb2)
+
+reticulate::source_python("utils.py")
+
+mc_preds_temp = get_mc_predictions(model, bbb2, 40, 10)
+
+predict_MC(mc_preds_temp)

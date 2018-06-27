@@ -1,12 +1,15 @@
 library(keras)
 library(tidyverse)
 
+img_height = 224
+img_width = 224
+
 model <- keras_model_sequential()
 model %>%
   layer_conv_2d(filter = 6,
                 kernel_size = c(3, 3),
                 padding = "same",
-                input_shape = c(322, 322, 3)) %>%
+                input_shape = c(img_width, img_height, 3)) %>%
   layer_activation("relu") %>%
   layer_conv_2d(filter = 16, kernel_size = c(6, 6))  %>%
   layer_activation("relu") %>%
@@ -64,16 +67,18 @@ summary(model)
 
 model %>% 
   fit_generator(
-    flow_images_from_directory("../out/earthquake_folders_data/juchitan_de_zaragoza/",
+    flow_images_from_directory("../out/earthquake_folders_data_resized/juchitan_de_zaragoza/",
                                generator = image_data_generator(rescale=1./255),
-                               target_size = c(322, 322),
+                               target_size = c(img_width, img_height),
                                batch_size = 32),
     steps_per_epoch = as.integer(200/32),
-    epochs = 10,
-    validation_data = flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
+    epochs = 500,
+    validation_data = flow_images_from_directory("../out/earthquake_folders_data_resized/santa_maria_xadani/",
                                                  generator = image_data_generator(rescale=1./255),
-                                                 target_size = c(322, 322),
+                                                 target_size = c(img_width, img_height),
                                                  batch_size = 32))
+
+save_model_hdf5(model, "../out/earthquake_model_2_100_epochs.hdf5")
 
  
 # See here: https://keras.io/models/sequential/62
@@ -87,7 +92,7 @@ model %>%
 preds = predict_generator(model,
                   flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
                                              generator = image_data_generator(rescale=1./255),
-                                             target_size = c(322, 322),
+                                             target_size = c(img_width, img_height),
                                              batch_size = 20),
                   steps = 10,
                   verbose = 1)
@@ -95,14 +100,14 @@ preds = predict_generator(model,
 aaa = evaluate_generator(model,
                    flow_images_from_directory("../out/earthquake_folders_data/union_hidalgo/",
                                               generator = image_data_generator(rescale=1./255),
-                                              target_size = c(322, 322),
+                                              target_size = c(img_width, img_height),
                                               batch_size = 20),
                    steps = 10)
 
 aaa_santa_maria = evaluate_generator(model,
                          flow_images_from_directory("../out/earthquake_folders_data/santa_maria_xadani/",
                                                     generator = image_data_generator(rescale=1./255),
-                                                    target_size = c(322, 322),
+                                                    target_size = c(img_width, img_height),
                                                     batch_size = 20),
                          steps = 10)
 aaa_santa_maria
@@ -118,8 +123,5 @@ present_un_h = list.files("../out/earthquake_folders_data/union_hidalgo/present/
 
 apply(preds, 1, which.max)
 
-save_model_hdf5(model, "../out/earthquake_model_1.rds")
 
-
-
-model = load_model_hdf5("../out/earthquake_model_1.rds")
+model = load_model_hdf5("../out/earthquake_model_1.hdf5")
