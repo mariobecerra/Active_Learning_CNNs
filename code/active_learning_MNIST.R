@@ -8,7 +8,7 @@ library(tidyverse)
 #################################################################################
 #################################################################################
 
-source("utils.R")
+source("utils_MNIST.R")
 np <- import("numpy")
 source_python("utils.py")
 source_python("utils_MNIST.py")
