@@ -32,11 +32,11 @@ img_cols = 32
 #################################################################################
 #################################################################################
 
-if(file.exists("../data/cifar10.rds")){
-  cifar10 <- readRDS("../data/cifar10.rds")
+if(file.exists("../out/cifar10.rds")){
+  cifar10 <- readRDS("../out/cifar10.rds")
 } else{
   cifar10 <- dataset_cifar10()  
-  saveRDS(cifar10, "../data/cifar10.rds")
+  saveRDS(cifar10, "../out/cifar10.rds")
 }
 
 
