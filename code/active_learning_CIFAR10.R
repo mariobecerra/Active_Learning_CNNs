@@ -32,7 +32,13 @@ img_cols = 32
 #################################################################################
 #################################################################################
 
-cifar10 <- dataset_cifar10()
+if(file.exists("../data/cifar10.rds")){
+  cifar10 <- readRDS("../data/cifar10.rds")
+} else{
+  cifar10 <- dataset_cifar10()  
+  saveRDS(cifar10, "../data/cifar10.rds")
+}
+
 
 x_all <- cifar10$train$x
 y_all <- as.integer(cifar10$train$y)
