@@ -8,7 +8,6 @@ library(tidyverse)
 #################################################################################
 #################################################################################
 
-source("utils.R")
 source("utils_CIFAR10.R")
 np <- import("numpy")
 source_python("utils.py")
@@ -36,17 +35,19 @@ img_cols = 32
 cifar10 <- dataset_cifar10()
 
 x_all <- cifar10$train$x
-y_all <- cifar10$train$y
+y_all <- as.integer(cifar10$train$y)
 x_test <- cifar10$test$x
-y_test <- cifar10$test$y
+y_test <- as.integer(cifar10$test$y)
 
 # reshape and rescale
 if(k_image_data_format() == 'channels_first'){
   x_all <- array_reshape(x_all, c(nrow(x_all), 3, img_rows, img_cols)) / 255
   x_test <- array_reshape(x_test, c(nrow(x_test), 3, img_rows, img_cols)) / 255
 } else{
-  x_all <- array_reshape(x_all, c(nrow(x_all), img_rows, img_cols, 3)) / 255
-  x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 3)) / 255
+  # x_all <- array_reshape(x_all, c(nrow(x_all), img_rows, img_cols, 3)) / 255
+  # x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 3)) / 255
+  x_all <- x_all / 255
+  x_test <- x_test / 255
 }
 
 # convert class vectors to binary class matrices
@@ -63,7 +64,7 @@ cat("Converted class vectors\n")
 #################################################################################
 
 # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-initial_pool_train_val = create_initial_pool_train_val(as.integer(y_all), 2018)
+initial_pool_train_val = create_initial_pool_train_val(y_all, 2018)
 
 ix_train = initial_pool_train_val$ix_train
 ix_val = initial_pool_train_val$ix_val
