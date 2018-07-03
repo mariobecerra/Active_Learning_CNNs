@@ -94,6 +94,50 @@ random_acquisition(
   seed = 201804)
 
 
+
+
+
+temp = paste0("Start FREQUENTIST var ratios: ", as.character(Sys.time()))
+cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
+# Run funciton for FREQUENTIST var ratios
+frequentist_acquisition(
+  acq_fun = 'freq_var_ratios', 
+  n_acq_steps = 50, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  n_epochs = 200,
+  n_images_per_iter = 50)
+temp = paste0("Finish FREQUENTIST var ratios: ", as.character(Sys.time()))
+cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
+
+
+
+
+temp = paste0("Start FREQUENTIST predictive entropy: ", as.character(Sys.time()))
+cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
+# Run funciton for FREQUENTIST predictive entropy
+frequentist_acquisition(
+  acq_fun = 'freq_predictive_entropy', 
+  n_acq_steps = 50, 
+  ix_train = initial_pool_train_val$ix_train, 
+  ix_val = initial_pool_train_val$ix_val, 
+  ix_pool = initial_pool_train_val$ix_pool, 
+  x_all = x_all, 
+  y_all = y_all, 
+  x_test = x_test, 
+  y_test = y_test, 
+  n_epochs = 200,
+  n_images_per_iter = 50)
+temp = paste0("Finish FREQUENTIST predictive entropy: ", as.character(Sys.time()))
+cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
+
+
+
 temp = paste0("Start var ratios: ", as.character(Sys.time()))
 cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
 # Run funciton for variation ratios
@@ -159,44 +203,5 @@ cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
 
 
 
-
-temp = paste0("Start FREQUENTIST var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
-# Run funciton for FREQUENTIST var ratios
-frequentist_acquisition(
-  acq_fun = 'freq_var_ratios', 
-  n_acq_steps = 50, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 200,
-  n_images_per_iter = 50)
-temp = paste0("Finish FREQUENTIST var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
-
-
-
-
-temp = paste0("Start FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
-# Run funciton for FREQUENTIST predictive entropy
-frequentist_acquisition(
-  acq_fun = 'freq_predictive_entropy', 
-  n_acq_steps = 50, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 200,
-  n_images_per_iter = 50)
-temp = paste0("Finish FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-cat(temp, file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
 
 # cat(as.character(Sys.time()), file = "../out/CIFAR10/finish_time.txt", append = T, sep = "\n")
