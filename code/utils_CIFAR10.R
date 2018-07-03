@@ -133,6 +133,7 @@ acquire_observations <- function(
   x_all, y_all, 
   x_test, y_test, 
   n_epochs = 50,
+  n_images_per_iter = 10,
   nb_MC_samples = 100){
   
   pool_subset = 5000
@@ -241,7 +242,7 @@ acquire_observations <- function(
       # get the 10 points with highest entropy value
       #### HABÍA PROBLEMAS CON LOS ÍNDICES!!!!
       ## id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10]
-      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:10]]
+      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:n_images_per_iter]]
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
@@ -306,6 +307,7 @@ random_acquisition <- function(
   x_all, y_all, 
   x_test, y_test, 
   n_epochs = 50,
+  n_images_per_iter = 10,
   seed = 201804){
   
   set.seed(seed)
@@ -390,7 +392,7 @@ random_acquisition <- function(
       # No need to sample cuz ix_pool is already shuffled
       # If I sample, then results change each time I run this
       #new_train_examples = sample(ix_pool, 10)
-      new_train_examples = ix_pool[1:10]
+      new_train_examples = ix_pool[1:n_images_per_iter]
       
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
@@ -450,7 +452,8 @@ frequentist_acquisition <- function(
   ix_train, ix_val, ix_pool, 
   x_all, y_all, 
   x_test, y_test, 
-  n_epochs = 50){
+  n_epochs = 50,
+  n_images_per_iter = 10){
   
   pool_subset = 5000
   
@@ -551,8 +554,8 @@ frequentist_acquisition <- function(
       
       # get the 10 points with highest entropy value
       #### HABÍA PROBLEMAS CON LOS ÍNDICES!!!!
-      ## id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:10]
-      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:10]]
+      ## id_highest_uncertainty = order(acq_func_values, decreasing = T)[1:n_images_per_iter]
+      id_highest_uncertainty = ix_pool_sample[order(acq_func_values, decreasing = T)[1:n_images_per_iter]]
       # Save indices for this iteration
       train_pool_ix[[i]] = list(
         ix_pool = ix_pool,
