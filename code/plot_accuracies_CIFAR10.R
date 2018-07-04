@@ -30,7 +30,7 @@ accuracies_all <- read_csv("../out/CIFAR10/random_acq/CIFAR10_accuracies_so_far_
   #   read_csv("../out/CIFAR10/bald_2018-05-07_no_dropout_test_time_50_MC_samples/CIFAR10_accuracies_so_far_bald.csv") %>% 
   #     mutate(acq_fun = "bald_no_dropout_test")
   # ) %>%
-  mutate(num_images = 20 + (iter-1)*10)
+  mutate(num_images = 20 + (iter-1)*50)
 
 
 
@@ -45,7 +45,7 @@ accuracies_all %>%
   ggplot(aes(num_images, accuracy, color = acq_fun)) +
   geom_point(size = 0.4) +
   geom_line(size = 0.6) +
-  scale_x_continuous(breaks = seq(20, 1000, by = 20)) +
+  #scale_x_continuous(breaks = seq(20, 1000, by = 20)) +
   #scale_y_continuous(breaks = seq(0.6, 1, by = 0.02)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position="bottom")
