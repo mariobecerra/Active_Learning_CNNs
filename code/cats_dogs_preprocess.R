@@ -20,17 +20,21 @@ n_files = length(index)
 
 ## Create list of arrays with the appropiate size.
 ## This allows us to see if it fits in memory before starting reading images.
+dat_train = list(y = labels,
+                 x = array(data = rep(0, n_files*out_width*out_height*3), 
+                           dim = c(n_files, out_width, out_height, 3)))
 
-dat_train = lapply(seq_along(index), function(i){
-  label = labels[i]
-  image = array(data = rep(0, out_width*out_height*3), dim = c(out_width, out_height, 3))
-  return(
-    list(
-      label = label,
-      image = image
-    )
-  )
-})
+
+# dat_train = lapply(seq_along(index), function(i){
+#   label = labels[i]
+#   image = array(data = rep(0, out_width*out_height*3), dim = c(out_width, out_height, 3))
+#   return(
+#     list(
+#       label = label,
+#       image = image
+#     )
+#   )
+# })
 
 for(i in seq_along(index)){
   if(i %% 100 == 0) cat("\tReading ", index[i], " (", i, " of ", n_files, ")\n", sep = "")
@@ -38,14 +42,13 @@ for(i in seq_along(index)){
   image <- drop(as.array(resize(load.image(paste0("../data/cats_dogs/train/", index[i])), 
                                 out_width, 
                                 out_height)))
-  dat_train[[i]]$image = image
+  dat_train$x[i,,,] = image
 }
 
-dir.create("../out/cats_vs_dogs/")
+dir.create("../out/cats_dogs/")
 saveRDS(dat_train, 
-        paste0("../out/cats_vs_dogs/dat_train_", out_width, "x", out_height, ".rds"))
+        paste0("../out/cats_dogs/dat_train_", out_width, "x", out_height, ".rds"))
 
-paste0("../out/cats_vs_dogs/dat_train_", out_width, "x", out_height, ".rds")
 
 # dat_train = lapply(seq_along(index), function(i){
 #   label = labels[i]
