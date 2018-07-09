@@ -10,8 +10,8 @@
 #################################################################################
 
 cats_dogs_model <- function(){
-  img_rows = 32
-  img_cols = 32
+  img_rows = 64
+  img_cols = 64
   if(k_image_data_format() == 'channels_first'){
     input_shape = c(3, img_rows, img_cols)
   } else{
@@ -25,25 +25,31 @@ cats_dogs_model <- function(){
     layer_conv_2d(
       filter = 32, 
       kernel_size = c(3,3), 
-      padding = "same", 
+      #padding = "same", 
       input_shape = input_shape
     ) %>%
     layer_activation("relu") %>%
-    layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%
+    layer_conv_2d(
+      filter = 32, 
+      kernel_size = c(3,3)) %>%
     layer_activation("relu") %>%
     layer_max_pooling_2d(pool_size = c(2,2)) %>%
     layer_dropout(0.25) %>%
-    layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%
+    layer_conv_2d(
+      filter = 32, 
+      kernel_size = c(3,3)) %>%
     layer_activation("relu") %>%
-    layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%
-    layer_activation("relu") %>%
+    # layer_conv_2d(
+    #   filter = 32, 
+    #   kernel_size = c(3,3)) %>%
+    # layer_activation("relu") %>%
     layer_max_pooling_2d(pool_size = c(2,2)) %>%
     layer_dropout(0.25) %>%
     layer_flatten() %>%
     layer_dense(64) %>%
     layer_activation("relu") %>%
     layer_dropout(0.5) %>%
-    layer_dense(1) %>%
+    layer_dense(2) %>%
     layer_activation("sigmoid")
   
   opt <- optimizer_rmsprop(lr = 0.0001, decay = 1e-6)
