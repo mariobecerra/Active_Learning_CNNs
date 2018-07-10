@@ -5,21 +5,7 @@ library(tidyverse)
 
 theme_set(theme_bw())
 
-cats_dogs <- readRDS("../out/cats_dogs/dat_train_64x64.rds")
 
-n_pics = nrow(cats_dogs$x)
-
-set.seed(2018)
-ix_train = sample(1:n_pics, size = 20000)
-ix_test = setdiff(1:n_pics, ix_train)
-
-x_all <- cats_dogs$x[ix_train,,,]
-y_all <- ifelse(cats_dogs$y[ix_train] == "dog", 1, 0)
-x_test <- cats_dogs$x[ix_test,,,]
-y_test <- ifelse(cats_dogs$y[ix_test] == "dog", 1, 0)
-
-rm(cats_dogs)
-gc()
 
 
 # folder_name = "../out/cats_dogs/random_acq/"
@@ -59,6 +45,8 @@ folder_names = c("../out/cats_dogs/random_acq/",
 
 
 
+
+
 for(folder_name in folder_names){
   aux_filename = stri_replace_first(fixed = "../out/cats_dogs/", replacement = "", str = folder_name) %>% 
     stri_replace_first(fixed = "/", replacement = "", str = .)
@@ -71,6 +59,26 @@ for(folder_name in folder_names){
     # probs_iter = readRDS(paste0("../out/cats_dogs/", probs_filename))
     cat("\tFile exists.\n\n")
   } else {
+    if(!exists("x_test")){
+      # Load data if it doesn't exist
+      cats_dogs <- readRDS("../out/cats_dogs/dat_train_64x64.rds")
+      
+      n_pics = nrow(cats_dogs$x)
+      
+      set.seed(2018)
+      ix_train = sample(1:n_pics, size = 20000)
+      ix_test = setdiff(1:n_pics, ix_train)
+      
+      # x_all <- cats_dogs$x[ix_train,,,]
+      # y_all <- ifelse(cats_dogs$y[ix_train] == "dog", 1, 0)
+      x_test <- cats_dogs$x[ix_test,,,]
+      # y_test <- ifelse(cats_dogs$y[ix_test] == "dog", 1, 0)
+      
+      rm(cats_dogs)
+      gc()
+    }
+    
+    
     model_filenames = grep("model", list.files(folder_name), value = T)
     
     n_filenames = length(model_filenames)
@@ -95,11 +103,24 @@ for(folder_name in folder_names){
 
 
 
-max_probs = apply(probs_iter_random[,1:2], 1, max)
 
-probs_iter_random %>% 
-  mutate(max_prob = max_probs) %>% 
-  group_by(iter) %>% 
+dat_probs = map_df(folder_names, function(folder_name){
+  aux_filename = stri_replace_first(fixed = "../out/cats_dogs/", replacement = "", str = folder_name) %>% 
+    stri_replace_first(fixed = "/", replacement = "", str = .)
+  
+  cat("Acquisition function folder:", aux_filename, "\n")
+  
+  probs_filename = paste0("probs_iter_", aux_filename, ".rds")
+  df_temp = readRDS(paste0("../out/cats_dogs/", probs_filename)) %>% 
+    mutate(acq_func = aux_filename,
+           max_prob = pmax(p1, p2))
+  
+  return(df_temp)
+})
+
+
+dat_probs %>% 
+  group_by(iter, acq_func) %>% 
   summarize(prob_q10 = quantile(max_prob, 0.1),
             median = median(max_prob),
             prob_q90 = quantile(max_prob, 0.9)) %>% 
@@ -111,4 +132,5 @@ probs_iter_random %>%
                 width = 0.4, size = 0.3) + 
   geom_point(aes(x = iter, y = median),
              size = 0.7) +
-  ylab("prob")
+  ylab("prob") +
+  facet_wrap(~acq_func)
