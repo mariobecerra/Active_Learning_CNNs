@@ -31,14 +31,16 @@ for(folder_name in folder_names){
   } else {
     if(!exists("x_test")){
       # Load data if it doesn't exist
+      cat("\tLoading dataset...")
       CIFAR10 <- readRDS("../out/cifar10.rds")
-      
+      cat("Dataset loaded.\n")
       # x_all <- CIFAR10$train$x
       # y_all <- as.integer(CIFAR10$train$y)
+      cat("\tScaling dataset...")
       x_test <- CIFAR10$test$x/255
       # y_test <- as.integer(CIFAR10$test$y)
-
       gc()
+      cat("dataset scaled.\n\n")
     }
     
     
@@ -54,7 +56,6 @@ for(folder_name in folder_names){
       cat("loaded.\n\t\tMaking predictions...")
       out = predict(model, x_test, batch_size = 256) %>% 
         as_tibble() %>% 
-        set_names(c("p1", "p2")) %>% 
         mutate(iter = as.integer(i))
       cat("predictions ready.\n\n")
       return(out)
@@ -62,8 +63,6 @@ for(folder_name in folder_names){
     saveRDS(probs_iter, paste0("../out/CIFAR10/", probs_filename))  
   }
 }
-
-
 
 
 
@@ -76,7 +75,7 @@ dat_probs = map_df(folder_names, function(folder_name){
   probs_filename = paste0("probs_iter_", aux_filename, ".rds")
   df_temp = readRDS(paste0("../out/CIFAR10/", probs_filename)) %>% 
     mutate(acq_func = aux_filename,
-           max_prob = pmax(p1, p2))
+           max_prob = apply(.[,1:10], 1, max))
   
   return(df_temp)
 })
@@ -88,7 +87,7 @@ dat_probs %>%
             median = median(max_prob),
             prob_q90 = quantile(max_prob, 0.9)) %>% 
   ggplot() +
-  geom_hline(yintercept = 0.5) +
+  geom_hline(yintercept = 0.1) +
   geom_errorbar(aes(x = iter, 
                     ymin = prob_q10, 
                     ymax = prob_q90), 
