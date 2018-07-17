@@ -1,3 +1,4 @@
+library(Rfast)
 library(stringi)
 library(tidyverse)
 
@@ -29,7 +30,7 @@ folder_names_MNIST = c("../out/MNIST/random_acq/",
 folder_names = list(folder_names_cats_dogs, folder_names_CIFAR10, folder_names_MNIST)
 
 
-dat_probs = map(folder_names, function(aaaa){
+dat_probs_list = map(folder_names, function(aaaa){
   df_temp_outer = map_df(aaaa, function(folder_name){
     dataset_name = stri_replace_all(str = substr(folder_name, start = 8, stop = nchar(folder_name)), 
                                     regex = "\\/.*", 
@@ -44,7 +45,8 @@ dat_probs = map(folder_names, function(aaaa){
     
     probs_filename = paste0("probs_iter_", aux_filename, ".rds")
     df_temp = readRDS(paste0("../out/", dataset_name, "/", probs_filename))
-    max_values = apply(select(df_temp, starts_with("p")), 1, max)
+    max_values = rowMaxs(as.matrix(select(df_temp, -iter)), value = TRUE)
+    # max_values = apply(select(df_temp, -iter), 1, max)
     df_out = df_temp %>% 
       mutate(max_prob = max_values,
              acq_func = aux_filename,
@@ -54,12 +56,18 @@ dat_probs = map(folder_names, function(aaaa){
   })
   return(df_temp_outer)
 })
-  
-  
 
 
 
-dat_probs %>% 
+
+
+dat_plots = map_df(dat_probs_list, function(dat){
+  dat_out = dat %>% 
+    select(iter, dataset, acq_func, max_prob)
+  return(dat_out)
+}) 
+
+dat_plots %>% 
   group_by(dataset, acq_func, iter) %>% 
   summarize(prob_q10 = quantile(max_prob, 0.1),
             median = median(max_prob),
@@ -73,4 +81,5 @@ dat_probs %>%
   geom_point(aes(x = iter, y = median),
              size = 0.7) +
   ylab("prob") +
-  facet_grid(dataset~acq_func)
+  facet_wrap(dataset~acq_func, scales = "free_x", ncol = 3)
+
