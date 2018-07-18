@@ -1,6 +1,6 @@
-# BNN
+# Active_Learning_CNNs
 
-Code for experiments with Bayesian Neural Networks.
+Experiments with Active Learning for Convolutional Neural Networks.
 
 
 ## Resources:
