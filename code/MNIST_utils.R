@@ -4,6 +4,14 @@
 #################################################################################
 #################################################################################
 
+get_date_time = function(){
+  x = Sys.time()
+  out = as.character(x) %>% 
+    gsub(pattern = ":", replacement = ".", x = ., fixed = T) %>% 
+    gsub(pattern = " ", replacement = "_", x = ., fixed = T) 
+  return(out)
+}
+
 create_initial_train <- function(y_all, seed = 2018){
   set.seed(seed)
   n = 2
@@ -53,7 +61,7 @@ acquire_observations <- function(
   pool_subset = 5000
   
   dir.create("../out/MNIST/", showWarnings = F)
-  dest_folder = paste0("../out/MNIST/", acq_fun, "/")
+  dest_folder = paste0("../out/MNIST/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "MNIST_accuracies_so_far_", acq_fun, ".csv")
@@ -226,7 +234,7 @@ random_acquisition <- function(
   acq_fun = 'random'
   
   dir.create("../out/MNIST/", showWarnings = F)
-  dest_folder = paste0("../out/MNIST/random_acq/")
+  dest_folder = paste0("../out/MNIST/", "random_acq", "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "MNIST_accuracies_so_far_", acq_fun, ".csv")
@@ -368,7 +376,7 @@ frequentist_acquisition <- function(
   pool_subset = 5000
   
   dir.create("../out/MNIST/", showWarnings = F)
-  dest_folder = paste0("../out/MNIST/", acq_fun, "/")
+  dest_folder = paste0("../out/MNIST/", "random_acq", "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "MNIST_accuracies_so_far_", acq_fun, ".csv")
