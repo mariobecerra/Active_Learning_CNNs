@@ -68,108 +68,112 @@ cat("Converted class vectors\n")
 # ix_train = shuffled_indices[1:20]
 # ix_val = shuffled_indices[21:120]
 # ix_pool = shuffled_indices[121:length(shuffled_indices)]
-initial_pool_train_val = create_initial_pool_train_val(y_all, 2018)
 
-ix_train = initial_pool_train_val$ix_train
-ix_val = initial_pool_train_val$ix_val
-ix_pool = initial_pool_train_val$ix_pool
+seeds = c(1729, 4104, 13832)
 
-
-
-
-# Run funciton for random acquisition
-random_acquisition(
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50,
-  seed = 201804)
-
-
-# Run funciton for variation ratios
-acquire_observations(
-  acq_fun = 'var_ratios', 
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50,
-  #nb_MC_samples = 100
-  nb_MC_samples = 100
-  )
-
-
-
-# Run funciton for BALD
-acquire_observations(
-  acq_fun = 'bald', 
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50,
-  nb_MC_samples = 100)
-
-
-
-# Run funciton for predictive entropy
-acquire_observations(
-  acq_fun = 'predictive_entropy', 
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50,
-  nb_MC_samples = 100)
-
-
-
-
-# Run funciton for FREQUENTIST var ratios
-frequentist_acquisition(
-  acq_fun = 'freq_var_ratios', 
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50)
-
-
-
-
-# Run funciton for FREQUENTIST predictive entropy
-frequentist_acquisition(
-  acq_fun = 'freq_predictive_entropy', 
-  n_acq_steps = 100, 
-  ix_train = initial_pool_train_val$ix_train, 
-  ix_val = initial_pool_train_val$ix_val, 
-  ix_pool = initial_pool_train_val$ix_pool, 
-  x_all = x_all, 
-  y_all = y_all, 
-  x_test = x_test, 
-  y_test = y_test, 
-  n_epochs = 50)
-
-
+for(i in seq_along(seeds)){
+  seed_i = seeds[i]
+  initial_pool_train_val = create_initial_pool_train_val(y_all, seed_i)
+  
+  ix_train = initial_pool_train_val$ix_train
+  ix_val = initial_pool_train_val$ix_val
+  ix_pool = initial_pool_train_val$ix_pool
+  
+  
+  
+  
+  # Run funciton for random acquisition
+  random_acquisition(
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50,
+    seed = seed_i)
+  
+  
+  # Run funciton for variation ratios
+  acquire_observations(
+    acq_fun = 'var_ratios', 
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50,
+    nb_MC_samples = 100)
+  
+  
+  
+  # Run funciton for BALD
+  acquire_observations(
+    acq_fun = 'bald', 
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50,
+    nb_MC_samples = 100)
+  
+  
+  
+  # Run funciton for predictive entropy
+  acquire_observations(
+    acq_fun = 'predictive_entropy', 
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50,
+    nb_MC_samples = 100)
+  
+  
+  
+  
+  # Run funciton for FREQUENTIST var ratios
+  frequentist_acquisition(
+    acq_fun = 'freq_var_ratios', 
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50)
+  
+  
+  
+  
+  # Run funciton for FREQUENTIST predictive entropy
+  frequentist_acquisition(
+    acq_fun = 'freq_predictive_entropy', 
+    n_acq_steps = 100, 
+    ix_train = initial_pool_train_val$ix_train, 
+    ix_val = initial_pool_train_val$ix_val, 
+    ix_pool = initial_pool_train_val$ix_pool, 
+    x_all = x_all, 
+    y_all = y_all, 
+    x_test = x_test, 
+    y_test = y_test, 
+    n_epochs = 50)
+  
+  
+}
 
