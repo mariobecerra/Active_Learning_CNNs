@@ -91,8 +91,6 @@ random_acquisition(
   seed = 201804)
 
 
-temp = paste0("Start var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for variation ratios
 acquire_observations(
   acq_fun = 'var_ratios', 
@@ -108,13 +106,9 @@ acquire_observations(
   #nb_MC_samples = 100
   nb_MC_samples = 100
   )
-temp = paste0("Finish var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
 
 
-temp = paste0("Start BALD: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for BALD
 acquire_observations(
   acq_fun = 'bald', 
@@ -128,14 +122,9 @@ acquire_observations(
   y_test = y_test, 
   n_epochs = 50,
   nb_MC_samples = 100)
-temp = paste0("Finish BALD: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
 
 
-
-temp = paste0("Start pred ent: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for predictive entropy
 acquire_observations(
   acq_fun = 'predictive_entropy', 
@@ -149,14 +138,10 @@ acquire_observations(
   y_test = y_test, 
   n_epochs = 50,
   nb_MC_samples = 100)
-temp = paste0("Finish pred ent: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
 
 
 
-temp = paste0("Start FREQUENTIST var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for FREQUENTIST var ratios
 frequentist_acquisition(
   acq_fun = 'freq_var_ratios', 
@@ -169,14 +154,10 @@ frequentist_acquisition(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50)
-temp = paste0("Finish FREQUENTIST var ratios: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
 
 
 
-temp = paste0("Start FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 # Run funciton for FREQUENTIST predictive entropy
 frequentist_acquisition(
   acq_fun = 'freq_predictive_entropy', 
@@ -189,7 +170,6 @@ frequentist_acquisition(
   x_test = x_test, 
   y_test = y_test, 
   n_epochs = 50)
-temp = paste0("Finish FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-cat(temp, file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
 
-# cat(as.character(Sys.time()), file = "../out/MNIST/finish_time.txt", append = T, sep = "\n")
+
+
