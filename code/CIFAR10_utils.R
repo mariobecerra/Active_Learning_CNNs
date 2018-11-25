@@ -5,6 +5,49 @@
 #################################################################################
 
 
+get_date_time = function(){
+  x = Sys.time()
+  out = as.character(x) %>% 
+    gsub(pattern = ":", replacement = ".", x = ., fixed = T) %>% 
+    gsub(pattern = " ", replacement = "_", x = ., fixed = T) 
+  return(out)
+}
+
+
+create_initial_train <- function(y_all, seed = 2018){
+  set.seed(seed)
+  n = 2
+  
+  y_temp = tibble(y = y_all) %>% 
+    mutate(ix = 1:nrow(.)) %>% 
+    arrange(y)
+  
+  indices_df = map_df(0:9, function(i){
+    filt = y_temp %>% 
+      filter(y == i)
+    out = tibble(y = rep(as.integer(i), n),
+                 ix = sample(filt$ix, n))
+    return(out)
+  })  
+  return(indices_df$ix)
+}
+
+
+create_initial_pool_train_val <- function(y_all, seed = 2018){
+  set.seed(seed)
+  ix_train = create_initial_train(y_all, seed)
+  available_idx = setdiff(1:length(y_all), ix_train)
+  shuffled_indices = sample(available_idx, length(available_idx))
+  ix_val = shuffled_indices[1:100]
+  ix_pool = shuffled_indices[101:length(shuffled_indices)]  
+  return(list(
+    ix_train = ix_train,
+    ix_val = ix_val,
+    ix_pool = ix_pool
+  ))
+}
+
+
 #################################################################################
 ## Define model
 #################################################################################
@@ -73,54 +116,7 @@ CIFAR10_model <- function(){
 }
 
 
-
-
 # Training ----------------------------------------------------------------
-
-# model %>% fit(
-#   x_train, y_train,
-#   batch_size = batch_size,
-#   epochs = epochs,
-#   validation_data = list(x_test, y_test),
-#   shuffle = TRUE
-# )
-
-#################################################################################
-## Creaste initial sets
-#################################################################################
-
-create_initial_train <- function(y_all, seed = 2018){
-  set.seed(seed)
-  n = 2
-  
-  y_temp = tibble(y = y_all) %>% 
-    mutate(ix = 1:nrow(.)) %>% 
-    arrange(y)
-  
-  indices_df = map_df(0:9, function(i){
-    filt = y_temp %>% 
-      filter(y == i)
-    out = tibble(y = rep(as.integer(i), n),
-                 ix = sample(filt$ix, n))
-    return(out)
-  })  
-  return(indices_df$ix)
-}
-
-
-create_initial_pool_train_val <- function(y_all, seed = 2018){
-  set.seed(seed)
-  ix_train = create_initial_train(y_all, seed)
-  available_idx = setdiff(1:length(y_all), ix_train)
-  shuffled_indices = sample(available_idx, length(available_idx))
-  ix_val = shuffled_indices[1:100]
-  ix_pool = shuffled_indices[101:length(shuffled_indices)]  
-  return(list(
-    ix_train = ix_train,
-    ix_val = ix_val,
-    ix_pool = ix_pool
-  ))
-}
 
 
 #################################################################################
@@ -139,7 +135,7 @@ acquire_observations <- function(
   pool_subset = 5000
   
   dir.create("../out/CIFAR10/", showWarnings = F)
-  dest_folder = paste0("../out/CIFAR10/", acq_fun, "/")
+  dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
@@ -295,8 +291,6 @@ acquire_observations <- function(
 
 
 
-
-
 #################################################################################
 ## Acquire 2/3
 #################################################################################
@@ -314,7 +308,7 @@ random_acquisition <- function(
   acq_fun = 'random'
   
   dir.create("../out/CIFAR10/", showWarnings = F)
-  dest_folder = paste0("../out/CIFAR10/random_acq/")
+  dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
@@ -458,7 +452,7 @@ frequentist_acquisition <- function(
   pool_subset = 5000
   
   dir.create("../out/CIFAR10/", showWarnings = F)
-  dest_folder = paste0("../out/CIFAR10/", acq_fun, "/")
+  dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
