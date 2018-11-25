@@ -137,6 +137,9 @@ acquire_observations <- function(
   dir.create("../out/CIFAR10/", showWarnings = F)
   dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
@@ -310,6 +313,9 @@ random_acquisition <- function(
   dir.create("../out/CIFAR10/", showWarnings = F)
   dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
@@ -454,6 +460,9 @@ frequentist_acquisition <- function(
   dir.create("../out/CIFAR10/", showWarnings = F)
   dest_folder = paste0("../out/CIFAR10/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
   
   accuracies_file_name = paste0(dest_folder, "CIFAR10_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
