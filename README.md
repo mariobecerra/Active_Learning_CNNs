@@ -31,6 +31,16 @@ The repository for the document is https://github.com/mariobecerra/msc_thesis. A
   - `CIFAR10_plot_probs.R`: Creates probability plot used in Results chapter.
   
   - `CIFAR10_initial_analysis.R`: Unused. To be deleted.
+  
+  - `cats_dogs_preprocess.R`: Resizes original train set to a 64 by 64 pixel format. Saves the dataset in a list in an RDS file.
+  
+  - `cats_dogs_active_learning.R`: Performs the active learning acquisition steps for the cats and dogs dataset.
+  
+  - `cats_dogs_utils.R`: Functions used in `cats_dogs_active_learning.R` to perform the active learninng steps.
+
+  - `cats_dogs_plot_accuracies.R`: Creates accuracy plot used in Results chapter.
+  
+  - `cats_dogs_plot_probs.R`: Creates probability plot used in Results chapter.
 
 
 - `data`: Training and test data. Subfolders:
