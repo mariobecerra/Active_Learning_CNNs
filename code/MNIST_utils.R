@@ -238,7 +238,7 @@ random_acquisition <- function(
   acq_fun = 'random'
   
   dir.create("../out/MNIST/", showWarnings = F)
-  dest_folder = paste0("../out/MNIST/", "random_acq", "_", get_date_time(), "/")
+  dest_folder = paste0("../out/MNIST/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   log_file_name = paste0(dest_folder, "log_file.txt")
   if(!file.exists(log_file_name)) file.create(log_file_name)
@@ -385,7 +385,7 @@ frequentist_acquisition <- function(
   pool_subset = 5000
   
   dir.create("../out/MNIST/", showWarnings = F)
-  dest_folder = paste0("../out/MNIST/", "random_acq", "_", get_date_time(), "/")
+  dest_folder = paste0("../out/MNIST/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
   log_file_name = paste0(dest_folder, "log_file.txt")
   if(!file.exists(log_file_name)) file.create(log_file_name)
