@@ -5,6 +5,14 @@
 #################################################################################
 
 
+get_date_time = function(){
+  x = Sys.time()
+  out = as.character(x) %>% 
+    gsub(pattern = ":", replacement = ".", x = ., fixed = T) %>% 
+    gsub(pattern = " ", replacement = "_", x = ., fixed = T) 
+  return(out)
+}
+
 #################################################################################
 ## Define model
 #################################################################################
@@ -119,8 +127,12 @@ acquire_observations <- function(
   pool_subset = 2000
   
   dir.create("../out/cats_dogs/", showWarnings = F)
-  dest_folder = paste0("../out/cats_dogs/", acq_fun, "/")
+  dest_folder = paste0("../out/cats_dogs/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
+  
   
   accuracies_file_name = paste0(dest_folder, "cats_dogs_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
@@ -160,7 +172,8 @@ acquire_observations <- function(
     cats_dogs_samples_test_file_name = paste0(dest_folder, "cats_dogs_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "cats_dogs_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -271,6 +284,7 @@ acquire_observations <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
@@ -294,8 +308,11 @@ random_acquisition <- function(
   acq_fun = 'random'
   
   dir.create("../out/cats_dogs/", showWarnings = F)
-  dest_folder = paste0("../out/cats_dogs/random_acq/")
+  dest_folder = paste0("../out/cats_dogs/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
   
   accuracies_file_name = paste0(dest_folder, "cats_dogs_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
@@ -334,7 +351,8 @@ random_acquisition <- function(
     cats_dogs_samples_test_file_name = paste0(dest_folder, "cats_dogs_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "cats_dogs_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -419,6 +437,7 @@ random_acquisition <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")  
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
@@ -438,8 +457,11 @@ frequentist_acquisition <- function(
   pool_subset = 2000
   
   dir.create("../out/cats_dogs/", showWarnings = F)
-  dest_folder = paste0("../out/cats_dogs/", acq_fun, "/")
+  dest_folder = paste0("../out/cats_dogs/", acq_fun, "_", get_date_time(), "/")
   dir.create(dest_folder)
+  log_file_name = paste0(dest_folder, "log_file.txt")
+  if(!file.exists(log_file_name)) file.create(log_file_name)
+  cat("Start:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
   
   accuracies_file_name = paste0(dest_folder, "cats_dogs_accuracies_so_far_", acq_fun, ".csv")
   train_pool_ix_file_name = paste0(dest_folder, "train_pool_ix_", acq_fun, ".rds")
@@ -479,7 +501,8 @@ frequentist_acquisition <- function(
     # cats_dogs_samples_test_file_name = paste0(dest_folder, "cats_dogs_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "cats_dogs_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -582,6 +605,7 @@ frequentist_acquisition <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
