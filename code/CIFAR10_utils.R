@@ -179,7 +179,8 @@ acquire_observations <- function(
     CIFAR10_samples_test_file_name = paste0(dest_folder, "CIFAR10_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "CIFAR10_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -290,6 +291,7 @@ acquire_observations <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
@@ -354,7 +356,8 @@ random_acquisition <- function(
     CIFAR10_samples_test_file_name = paste0(dest_folder, "CIFAR10_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "CIFAR10_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -439,6 +442,7 @@ random_acquisition <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")  
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
@@ -502,7 +506,8 @@ frequentist_acquisition <- function(
     # CIFAR10_samples_test_file_name = paste0(dest_folder, "CIFAR10_samples_test_", acq_fun, "_", i_str, ".npy")
     model_file_name = paste0(dest_folder, "CIFAR10_model_", acq_fun, "_", i_str, '.h5')
     
-    cat("\t\tIter:", i, "\n")
+    date_time = as.character(Sys.time())
+    cat("\t\tIter:", i, "(", date_time, ")\n")
     
     if(is.null(train_pool_ix[[i]])){
       # If ith entry is null, it means that this hasn't been run before so
@@ -605,6 +610,7 @@ frequentist_acquisition <- function(
     }
   } # end for loop
   cat("\n\nLoop ended.\n\n\n")
+  cat("End:", as.character(Sys.time()), "\n", file = log_file_name, append = T)
 }
 
 
