@@ -16,11 +16,22 @@ The repository for the document is https://github.com/mariobecerra/msc_thesis. A
   
   - `MNIST_utils.py`: Python functions used in `MNIST_active_learning.R` to perform the active learninng steps. Particularly, the Keras model.
   
-  - `MNIST_plot_probs.R`: Creates probability plot used in Results chapter.
-  
   - `MNIST_plot_accuracies.R`: Creates accuracy plot used in Results chapter.
   
+  - `MNIST_plot_probs.R`: Creates probability plot used in Results chapter.
+  
   - `MNIST_model_dropout.py`: Unused. To be deleted.
+  
+  - `CIFAR10_active_learning.R`: Performs the active learning acquisition steps for the CIFAR10 dataset.
+  
+  - `CIFAR10_utils.R`: Functions used in `CIFAR10_active_learning.R` to perform the active learninng steps.
+  
+  - `CIFAR10_plot_accuracies.R`: Creates accuracy plot used in Results chapter.
+  
+  - `CIFAR10_plot_probs.R`: Creates probability plot used in Results chapter.
+  
+  - `CIFAR10_initial_analysis.R`: Unused. To be deleted.
+
 
 - `data`: Training and test data. Subfolders:
   
