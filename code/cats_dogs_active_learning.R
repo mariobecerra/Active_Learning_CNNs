@@ -32,10 +32,23 @@ img_cols = 64
 #################################################################################
 #################################################################################
 
-if(file.exists("../out/cats_dogs/dat_train_64x64.rds")){
-  cats_dogs <- readRDS("../out/cats_dogs/dat_train_64x64.rds")
+train_folder = "../out/cats_dogs/"
+if(!dir.exists(train_folder)) dir.create(train_folder)
+
+train_rds_filename = paste0(train_folder, "dat_train_64x64.rds")
+train_data_url = "https://www.dropbox.com/s/9t7p4ng5nu8ogc2/dat_train_64x64.rds?dl=1"
+
+if(file.exists(train_rds_filename)){
+  cats_dogs <- readRDS(train_rds_filename)
 } else{
-  stop("Data file not found.\n\n")
+  message("Data file not found. Going to download.\n\n")
+  download_res = try(download.file(train_data_url, train_rds_filename))
+  if(class(download_res) != "try-error") {
+    message("Download successful.")
+    cats_dogs <- readRDS(train_rds_filename)
+  } else{
+    stop("Download failed!!!")
+  }
 }
 
 n_pics = nrow(cats_dogs$x)
@@ -208,7 +221,7 @@ for(i in seq_along(seeds)){
   temp = paste0("Finish pred ent: ", as.character(Sys.time()))
   cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
-
+  
 }
 
 
