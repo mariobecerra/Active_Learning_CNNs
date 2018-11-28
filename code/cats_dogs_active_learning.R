@@ -117,8 +117,6 @@ for(i in seq_along(seeds)){
   
   
   
-  temp = paste0("Start FREQUENTIST var ratios: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   # Run funciton for FREQUENTIST var ratios
   frequentist_acquisition(
     acq_fun = 'freq_var_ratios', 
@@ -132,14 +130,10 @@ for(i in seq_along(seeds)){
     y_test = y_test, 
     n_epochs = 200,
     n_images_per_iter = 50)
-  temp = paste0("Finish FREQUENTIST var ratios: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
   
   
   
-  temp = paste0("Start FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   # Run funciton for FREQUENTIST predictive entropy
   frequentist_acquisition(
     acq_fun = 'freq_predictive_entropy', 
@@ -153,13 +147,9 @@ for(i in seq_along(seeds)){
     y_test = y_test, 
     n_epochs = 200,
     n_images_per_iter = 50)
-  temp = paste0("Finish FREQUENTIST predictive entropy: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
   
   
-  temp = paste0("Start var ratios: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   # Run funciton for variation ratios
   acquire_observations(
     acq_fun = 'var_ratios', 
@@ -175,13 +165,8 @@ for(i in seq_along(seeds)){
     n_images_per_iter = 50,
     nb_MC_samples = 100
   )
-  temp = paste0("Finish var ratios: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
   
-  
-  temp = paste0("Start BALD: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   # Run funciton for BALD
   acquire_observations(
     acq_fun = 'bald', 
@@ -196,14 +181,10 @@ for(i in seq_along(seeds)){
     n_epochs = 200,
     n_images_per_iter = 50,
     nb_MC_samples = 100)
-  temp = paste0("Finish BALD: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
   
   
   
-  temp = paste0("Start pred ent: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   # Run funciton for predictive entropy
   acquire_observations(
     acq_fun = 'predictive_entropy', 
@@ -218,8 +199,6 @@ for(i in seq_along(seeds)){
     n_epochs = 200,
     n_images_per_iter = 50,
     nb_MC_samples = 100)
-  temp = paste0("Finish pred ent: ", as.character(Sys.time()))
-  cat(temp, file = "../out/cats_dogs/finish_time.txt", append = T, sep = "\n")
   
   
 }
