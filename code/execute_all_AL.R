@@ -3,7 +3,9 @@
 # MNIST
 #################################
 
-mnist_log_filename = paste0("../out/MNIST/output_", as.integer(Sys.time()), ".log")
+mnist_out_folder = "../out/MNIST/"
+dir.create(mnist_out_folder)
+mnist_log_filename = paste0(mnist_out_folder, "output_", as.integer(Sys.time()), ".log")
 file.create(mnist_log_filename)
 con <- file(mnist_log_filename)
 sink(con, append=TRUE)
@@ -22,7 +24,9 @@ gc()
 # CIFAR10
 #################################
 
-cifar10_log_filename = paste0("../out/CIFAR10/output_", as.integer(Sys.time()), ".log")
+cifar10_out_folder = "../out/CIFAR10/"
+dir.create(cifar10_out_folder)
+cifar10_log_filename = paste0(cifar10_out_folder, "output_", as.integer(Sys.time()), ".log")
 file.create(cifar10_log_filename)
 con <- file(cifar10_log_filename)
 sink(con, append=TRUE)
@@ -41,6 +45,9 @@ gc()
 # Cats and dogs
 #################################
 
+cats_dogs_out_folder = "../out/cats_dogs/"
+dir.create(cats_dogs_out_folder)
+cats_dogs_log_filename = paste0(cats_dogs_out_folder, "output_", as.integer(Sys.time()), ".log")
 
 cats_dogs_log_filename = paste0("../out/cats_dogs/output_", as.integer(Sys.time()), ".log")
 file.create(cats_dogs_log_filename)
