@@ -4,6 +4,7 @@
 #################################
 
 mnist_log_filename = paste0("../out/MNIST/output_", as.integer(Sys.time()), ".log")
+file.create(mnist_log_filename)
 con <- file(mnist_log_filename)
 sink(con, append=TRUE)
 sink(con, append=TRUE, type="message")
@@ -22,6 +23,7 @@ gc()
 #################################
 
 cifar10_log_filename = paste0("../out/CIFAR10/output_", as.integer(Sys.time()), ".log")
+file.create(cifar10_log_filename)
 con <- file(cifar10_log_filename)
 sink(con, append=TRUE)
 sink(con, append=TRUE, type="message")
@@ -41,6 +43,7 @@ gc()
 
 
 cats_dogs_log_filename = paste0("../out/cats_dogs/output_", as.integer(Sys.time()), ".log")
+file.create(cats_dogs_log_filename)
 con <- file(cats_dogs_log_filename)
 sink(con, append=TRUE)
 sink(con, append=TRUE, type="message")
