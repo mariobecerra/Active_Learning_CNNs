@@ -1,9 +1,20 @@
 library(dplyr)
+library(purrr)
 library(tidyr)
 library(readr)
 library(ggplot2)
 
 theme_set(theme_bw())
+
+out_dirs = list.dirs("../out/MNIST")
+
+random_dirs = grep("random", out_dirs, ignore.case = T, value = T)
+
+random_accuracies = map_df(seq_along(random_dirs), function(i){
+  file_name = grep("accuracies", list.files(random_dirs[i], full.names = T), value = T)
+  out = read_csv(file_name) %>% 
+    mutate(run_id = i)
+})
 
 accuracies_all <- read_csv("../out/MNIST/random_acq/MNIST_accuracies_so_far_random.csv") %>% 
   bind_rows(
