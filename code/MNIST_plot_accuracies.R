@@ -14,6 +14,8 @@ names_colors = tibble(
               "predictive_entropy", "random", "var_ratios")) %>% 
   mutate(color = cbPalette[1:nrow(.)])
 
+names_colors_vec = names_colors$color
+names(names_colors_vec) = names_colors$names
 
 theme_set(theme_bw())
 
@@ -144,7 +146,8 @@ accuracies_avg %>%
 
 
 accuracies_avg %>% 
-  ggplot(aes(num_images, accuracy, color = acq_fun)) +
+  left_join(names_colors) %>% 
+  ggplot(aes(num_images, accuracy, color = names)) +
   geom_point(size = 0.3) +
   geom_line(size = 0.2) +
   scale_y_continuous(breaks = seq(0.6, 1, by = 0.05)) +
@@ -154,7 +157,7 @@ accuracies_avg %>%
        x = "Number of images", 
        y = "Accuracy on test set", 
        color = "Acquisition\nfunction") +
-  scale_color_manual(values = cbPalette, labels = labs, breaks = vals) 
+  scale_color_manual(values = names_colors_vec)
 
 
 
