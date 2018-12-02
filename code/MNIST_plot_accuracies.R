@@ -22,9 +22,9 @@ theme_set(theme_bw())
 
 # My functions ------------------------------------------------------------
 
-bind_accuracies = function(out_dirs){
+bind_accuracies = function(out_subdirs){
   
-  random_dirs = grep("random", out_dirs, ignore.case = T, value = T)
+  random_dirs = grep("random", out_subdirs, ignore.case = T, value = T)
   
   random_accuracies = map_df(seq_along(random_dirs), function(i){
     file_name = grep("accuracies", list.files(random_dirs[i], full.names = T), value = T)
@@ -34,7 +34,7 @@ bind_accuracies = function(out_dirs){
   })
   
   
-  bald_dirs = grep("bald", out_dirs, ignore.case = T, value = T)
+  bald_dirs = grep("bald", out_subdirs, ignore.case = T, value = T)
   
   bald_accuracies = map_df(seq_along(bald_dirs), function(i){
     file_name = grep("accuracies", list.files(bald_dirs[i], full.names = T), value = T)
@@ -45,7 +45,7 @@ bind_accuracies = function(out_dirs){
   
   
   
-  predictive_entropy_dirs = grep("predictive_entropy", out_dirs, ignore.case = T, value = T) %>% 
+  predictive_entropy_dirs = grep("predictive_entropy", out_subdirs, ignore.case = T, value = T) %>% 
     grep("freq", ., ignore.case = T, value = T, invert = T)
   
   predictive_entropy_accuracies = map_df(seq_along(predictive_entropy_dirs), function(i){
@@ -57,7 +57,7 @@ bind_accuracies = function(out_dirs){
   
   
   
-  var_ratios_dirs = grep("var_ratios", out_dirs, ignore.case = T, value = T) %>% 
+  var_ratios_dirs = grep("var_ratios", out_subdirs, ignore.case = T, value = T) %>% 
     grep("freq", ., ignore.case = T, value = T, invert = T)
   
   var_ratios_accuracies = map_df(seq_along(var_ratios_dirs), function(i){
@@ -69,7 +69,7 @@ bind_accuracies = function(out_dirs){
   
   
   
-  freq_predictive_entropy_dirs = grep("predictive_entropy", out_dirs, ignore.case = T, value = T) %>% 
+  freq_predictive_entropy_dirs = grep("predictive_entropy", out_subdirs, ignore.case = T, value = T) %>% 
     grep("freq", ., ignore.case = T, value = T, invert = F)
   
   freq_predictive_entropy_accuracies = map_df(seq_along(freq_predictive_entropy_dirs), function(i){
@@ -81,7 +81,7 @@ bind_accuracies = function(out_dirs){
   
   
   
-  freq_var_ratios_dirs = grep("var_ratios", out_dirs, ignore.case = T, value = T) %>% 
+  freq_var_ratios_dirs = grep("var_ratios", out_subdirs, ignore.case = T, value = T) %>% 
     grep("freq", ., ignore.case = T, value = T, invert = F)
   
   freq_var_ratios_accuracies = map_df(seq_along(freq_var_ratios_dirs), function(i){
@@ -110,40 +110,25 @@ bind_accuracies = function(out_dirs){
 
 # Read data and create dataframe with all accuracies ----------------------
 
+out_dir = "../out/MNIST/"
+out_subdirs = list.dirs(out_dir)
+accuracies_filename = paste0(out_dir, "accuracies_all.rds")
 
-out_dirs = list.dirs("../out/MNIST")
+if(file.exists(accuracies_filename)){
+  accuracies_all = readRDS(accuracies_filename)
+} else{
+  accuracies_all <- bind_accuracies(out_subdirs) %>% 
+    mutate(num_images = 20 + (iter-1)*10)
+  
+  saveRDS(accuracies_all, accuracies_filename)
+}
 
 
-accuracies_all <- bind_accuracies(out_dirs) %>% 
-  mutate(num_images = 20 + (iter-1)*10)
-
-saveRDS(accuracies_all, "../out/MNIST/accuracies_all.rds")
-
+# Transform and plot data -------------------------------------------------
 
 accuracies_avg = accuracies_all %>% 
   group_by(acq_fun, iter, num_images) %>% 
   summarize(accuracy = mean(accuracy, na.rm = T))
-
-
-
-accuracies_avg %>% 
-  ggplot(aes(num_images, accuracy, color = acq_fun)) +
-  geom_point(size = 0.3) +
-  geom_line(size = 0.2)
-
-
-accuracies_avg %>% 
-  ggplot(aes(num_images, accuracy, color = acq_fun)) +
-  geom_line()
-
-
-accuracies_avg %>% 
-  filter(iter < 30) %>% 
-  ggplot(aes(num_images, accuracy, color = acq_fun)) +
-  geom_line() 
-
-
-
 
 accuracies_avg %>% 
   left_join(names_colors) %>% 
@@ -161,6 +146,21 @@ accuracies_avg %>%
 
 
 
+# accuracies_avg %>% 
+#   ggplot(aes(num_images, accuracy, color = acq_fun)) +
+#   geom_point(size = 0.3) +
+#   geom_line(size = 0.2)
+# 
+# 
+# accuracies_avg %>% 
+#   ggplot(aes(num_images, accuracy, color = acq_fun)) +
+#   geom_line()
+# 
+# 
+# accuracies_avg %>% 
+#   filter(iter < 30) %>% 
+#   ggplot(aes(num_images, accuracy, color = acq_fun)) +
+#   geom_line() 
 
 
 # Old files:
