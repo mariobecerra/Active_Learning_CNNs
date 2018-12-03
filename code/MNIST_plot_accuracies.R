@@ -134,7 +134,39 @@ accuracies_avg %>%
   left_join(names_colors) %>% 
   ggplot(aes(num_images, accuracy, color = names)) +
   geom_point(size = 0.3) +
-  geom_line(size = 0.2) +
+  geom_line(size = 0.4) +
+  scale_y_continuous(breaks = seq(0.6, 1, by = 0.05)) +
+  scale_x_continuous(breaks = seq(0, 1200, by = 20)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "MNIST dataset", 
+       x = "Number of images", 
+       y = "Accuracy on test set", 
+       color = "Acquisition\nfunction") +
+  scale_color_manual(values = names_colors_vec)
+
+
+accuracies_avg %>% 
+  left_join(names_colors) %>% 
+  filter(acq_fun %in% c("freq_predictive_entropy", "predictive_entropy")) %>% 
+  ggplot(aes(num_images, accuracy, color = names)) +
+  geom_point(size = 0.3) +
+  geom_line(size = 0.4) +
+  scale_y_continuous(breaks = seq(0.6, 1, by = 0.05)) +
+  scale_x_continuous(breaks = seq(0, 1200, by = 20)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "MNIST dataset", 
+       x = "Number of images", 
+       y = "Accuracy on test set", 
+       color = "Acquisition\nfunction") +
+  scale_color_manual(values = names_colors_vec)
+
+
+accuracies_avg %>% 
+  left_join(names_colors) %>% 
+  filter(acq_fun %in% c("freq_var_ratios", "var_ratios")) %>% 
+  ggplot(aes(num_images, accuracy, color = names)) +
+  geom_point(size = 0.3) +
+  geom_line(size = 0.4) +
   scale_y_continuous(breaks = seq(0.6, 1, by = 0.05)) +
   scale_x_continuous(breaks = seq(0, 1200, by = 20)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
