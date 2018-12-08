@@ -88,12 +88,16 @@ y_train = y_all_cat[ix_train, ]
 x_val = x_all[ix_val, , , , drop = F]
 y_val = y_all_cat[ix_val, ]
 
+n_epochs = 250
+
+model = cats_dogs_model()
+
 history = model %>% 
   fit(
     x_train, y_train,
     batch_size = batch_size,
     epochs = n_epochs,
-    verbose = 0,
+    verbose = 2,
     validation_data = list(x_val, y_val)
   )
 
