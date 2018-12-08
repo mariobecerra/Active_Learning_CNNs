@@ -89,7 +89,7 @@ seeds = c(1729, 4104, 13832)
 for(i in seq_along(seeds)){
   seed_i = seeds[i]
   
-  # Random initial set of 20 points for training, 100 for validation and the rest as pooling set
+  # Random initial set of 100 points for training, 100 for validation and the rest as pooling set
   initial_pool_train_val = create_initial_pool_train_val(y_all, seed_i)
   
   ix_train = initial_pool_train_val$ix_train
@@ -101,7 +101,7 @@ for(i in seq_along(seeds)){
   
   # Run funciton for random acquisition
   random_acquisition(
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -109,8 +109,8 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50,
+    n_epochs = 75,
+    n_images_per_iter = 150,
     seed = seed_i)
   
   
@@ -120,7 +120,7 @@ for(i in seq_along(seeds)){
   # Run funciton for FREQUENTIST var ratios
   frequentist_acquisition(
     acq_fun = 'freq_var_ratios', 
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -128,8 +128,8 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50)
+    n_epochs = 75,
+    n_images_per_iter = 150)
   
   
   
@@ -137,7 +137,7 @@ for(i in seq_along(seeds)){
   # Run funciton for FREQUENTIST predictive entropy
   frequentist_acquisition(
     acq_fun = 'freq_predictive_entropy', 
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -145,15 +145,15 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50)
+    n_epochs = 75,
+    n_images_per_iter = 150)
   
   
   
   # Run funciton for variation ratios
   acquire_observations(
     acq_fun = 'var_ratios', 
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -161,8 +161,8 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50,
+    n_epochs = 75,
+    n_images_per_iter = 150,
     nb_MC_samples = 100
   )
   
@@ -170,7 +170,7 @@ for(i in seq_along(seeds)){
   # Run funciton for BALD
   acquire_observations(
     acq_fun = 'bald', 
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -178,8 +178,8 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50,
+    n_epochs = 75,
+    n_images_per_iter = 150,
     nb_MC_samples = 100)
   
   
@@ -188,7 +188,7 @@ for(i in seq_along(seeds)){
   # Run funciton for predictive entropy
   acquire_observations(
     acq_fun = 'predictive_entropy', 
-    n_acq_steps = 50, 
+    n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
     ix_val = initial_pool_train_val$ix_val, 
     ix_pool = initial_pool_train_val$ix_pool, 
@@ -196,8 +196,8 @@ for(i in seq_along(seeds)){
     y_all = y_all, 
     x_test = x_test, 
     y_test = y_test, 
-    n_epochs = 200,
-    n_images_per_iter = 50,
+    n_epochs = 75,
+    n_images_per_iter = 150,
     nb_MC_samples = 100)
   
   
