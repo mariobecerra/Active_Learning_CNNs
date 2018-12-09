@@ -119,7 +119,7 @@ if(file.exists(accuracies_filename)){
 } else{
   accuracies_all <- bind_accuracies(out_subdirs) %>% 
     # Modificar esto
-    mutate(num_images = 20 + (iter-1)*50)
+    mutate(num_images = 100 + (iter-1)*50)
   
   saveRDS(accuracies_all, accuracies_filename)
 }
