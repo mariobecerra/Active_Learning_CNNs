@@ -16,7 +16,7 @@ get_date_time = function(){
 
 create_initial_train <- function(y_all, seed = 2018){
   set.seed(seed)
-  n = 2
+  n = 10
   
   y_temp = tibble(y = y_all) %>% 
     mutate(ix = 1:nrow(.)) %>% 
@@ -104,7 +104,7 @@ CIFAR10_model <- function(){
     layer_dense(10) %>%
     layer_activation("softmax")
   
-  opt <- optimizer_rmsprop(lr = 0.0001, decay = 1e-6)
+  opt <- optimizer_rmsprop(lr = 0.0005, decay = 1e-6)
   
   model %>% compile(
     loss = "categorical_crossentropy",
