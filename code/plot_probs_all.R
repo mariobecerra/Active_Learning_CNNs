@@ -1,61 +1,86 @@
 library(Rfast)
 library(stringi)
 library(tidyverse)
+library(here)
 
 theme_set(theme_bw())
+out_out = here("out/")
 
 
-folder_names_CIFAR10 = c("../out/CIFAR10/random_acq/",
-                         # "../out/CIFAR10/var_ratios/",
-                         # "../out/CIFAR10/bald/",
-                         # "../out/CIFAR10/predictive_entropy/",
-                         "../out/CIFAR10/freq_var_ratios/",
-                         "../out/CIFAR10/freq_predictive_entropy/")
-
-folder_names_cats_dogs = c("../out/cats_dogs/random_acq/",
-                           # "../out/cats_dogs/var_ratios/",
-                           # "../out/cats_dogs/bald/",
-                           # "../out/cats_dogs/predictive_entropy/",
-                           "../out/cats_dogs/freq_var_ratios/",
-                           "../out/cats_dogs/freq_predictive_entropy/")
-
-folder_names_MNIST = c("../out/MNIST/random_acq/",
-                       # "../out/MNIST/var_ratios/",
-                       # "../out/MNIST/bald/",
-                       # "../out/MNIST/predictive_entropy/",
-                       "../out/MNIST/freq_var_ratios/",
-                       "../out/MNIST/freq_predictive_entropy/")
+folders = c(paste0(out_out, "CIFAR10/"),
+            paste0(out_out, "MNIST/"),
+            paste0(out_out, "cats_dogs/"))
 
 
-folder_names = list(folder_names_cats_dogs, folder_names_CIFAR10, folder_names_MNIST)
+rds_files = map(folders, function(fldr) {
+  files_out = list.files(fldr)
+  probs_files = grep("probs_iter_", files_out, fixed = T, value = T)
+  out = paste0(fldr, probs_files)
+  return(out)
+}) %>% 
+  set_names(folders)
 
 
-dat_probs_list = map(folder_names, function(aaaa){
-  df_temp_outer = map_df(aaaa, function(folder_name){
-    dataset_name = stri_replace_all(str = substr(folder_name, start = 8, stop = nchar(folder_name)), 
-                                    regex = "\\/.*", 
-                                    replacement = "")
+
+
+dat_probs_list = map(seq_along(rds_files), function(i){
+  short_route = stri_extract_first(regex = "out/.*", names(rds_files)[i])
+  dataset_name = gsub("out/|/", "", short_route)
+  file_names = rds_files[[i]]
+  acq_functions = gsub(".*/out/", "", file_names) %>% 
+    stri_replace_first(fixed = paste0(dataset_name, "/"), replacement = "", str = .) %>% 
+    stri_replace_first(fixed = "probs_iter_", replacement = "", str = .) %>% 
+    stri_replace_first(regex = "_2018.*", replacement = "", str = .) 
+  runs_id = tibble(acq_funct = acq_functions) %>% 
+    group_by(acq_funct) %>% 
+    mutate(run = 1:n()) %>% 
+    ungroup()
+  df_temp_out = map_df(seq_along(file_names), function(j){
+    file_name_rds = file_names[j]
+    print(file_name_rds)
     
-    cat("\n\nDataset:", dataset_name, "\n")
+    df_temp = readRDS(file_name_rds)
     
-    aux_filename = stri_replace_first(fixed = paste0("../out/", dataset_name, "/"), replacement = "", str = folder_name) %>% 
-      stri_replace_first(fixed = "/", replacement = "", str = .)
-    
-    cat("\tAcquisition function folder:", aux_filename, "\n")
-    
-    probs_filename = paste0("probs_iter_", aux_filename, ".rds")
-    df_temp = readRDS(paste0("../out/", dataset_name, "/", probs_filename))
     max_values = rowMaxs(as.matrix(select(df_temp, -iter)), value = TRUE)
-    # max_values = apply(select(df_temp, -iter), 1, max)
-    df_out = df_temp %>% 
-      mutate(max_prob = max_values,
-             acq_func = aux_filename,
-             dataset = dataset_name)
     
-    return(df_out)
-  })
-  return(df_temp_outer)
-})
+    df_temp = df_temp %>% 
+      mutate(max_prob = max_values, 
+             acq_func = runs_id$acq_funct[j],
+             run = runs_id$run[j])
+    return(df_temp)
+  }) %>% 
+    mutate(dataset = dataset_name)
+  return(df_temp_out)
+}) 
+
+
+# 
+# dat_probs_list = map(folder_names, function(aaaa){
+#   df_temp_outer = map_df(aaaa, function(folder_name){
+#     dataset_name = stri_replace_all(str = substr(folder_name, start = 8, stop = nchar(folder_name)), 
+#                                     regex = "\\/.*", 
+#                                     replacement = "")
+#     
+#     cat("\n\nDataset:", dataset_name, "\n")
+#     
+#     aux_filename = stri_replace_first(fixed = paste0("../out/", dataset_name, "/"), replacement = "", str = folder_name) %>% 
+#       stri_replace_first(fixed = "/", replacement = "", str = .)
+#     
+#     cat("\tAcquisition function folder:", aux_filename, "\n")
+#     
+#     probs_filename = paste0("probs_iter_", aux_filename, ".rds")
+#     df_temp = readRDS(paste0("../out/", dataset_name, "/", probs_filename))
+#     max_values = rowMaxs(as.matrix(select(df_temp, -iter)), value = TRUE)
+#     # max_values = apply(select(df_temp, -iter), 1, max)
+#     df_out = df_temp %>% 
+#       mutate(max_prob = max_values,
+#              acq_func = aux_filename,
+#              dataset = dataset_name)
+#     
+#     return(df_out)
+#   })
+#   return(df_temp_outer)
+# })
 
 
 
@@ -63,9 +88,12 @@ dat_probs_list = map(folder_names, function(aaaa){
 
 dat_plots = map_df(dat_probs_list, function(dat){
   dat_out = dat %>% 
-    select(iter, dataset, acq_func, max_prob)
+    select(iter, run, dataset, acq_func, max_prob)
   return(dat_out)
 }) 
+
+
+
 
 dat_plots %>% 
   group_by(dataset, acq_func, iter) %>% 
