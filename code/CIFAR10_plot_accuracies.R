@@ -3,12 +3,13 @@ library(purrr)
 library(tidyr)
 library(readr)
 library(ggplot2)
+library(here)
 
-source("plot_accuracies_utils.R")
+source(here("code/plot_accuracies_utils.R"))
 
 # Read data and create dataframe with all accuracies ----------------------
 
-out_dir = "../out/CIFAR10/"
+out_dir = here("out/CIFAR10/")
 out_subdirs = list.dirs(out_dir)
 accuracies_filename = paste0(out_dir, "accuracies_all.rds")
 
@@ -61,7 +62,7 @@ max_num_images = max(accuracies_avg$num_images)
     ggplot(aes(num_images, accuracy, color = names)) +
     geom_point(size = 0.3) +
     geom_line(size = 0.4) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 100)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
     my_theme() +
     labs(
       title = plot_title,
@@ -87,7 +88,7 @@ max_num_images = max(accuracies_avg$num_images)
     geom_point(size = 0.6, aes(color = names)) +
     geom_line(size = 0.5, aes(color = names)) +
     geom_ribbon(aes(ymin = lower, ymax = upper, fill = names), alpha = 0.3, color = NA) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 100)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
     my_theme() +
     labs(
       title = plot_title,
@@ -117,7 +118,7 @@ max_num_images = max(accuracies_avg$num_images)
     geom_point(size = 0.6, aes(color = names)) +
     geom_line(size = 0.5, aes(color = names)) +
     geom_ribbon(aes(ymin = lower, ymax = upper, fill = names), alpha = 0.3, color = NA) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 100)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
     my_theme() +
     labs(
       title = plot_title,
