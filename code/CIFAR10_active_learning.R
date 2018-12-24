@@ -73,9 +73,9 @@ cat("Converted class vectors\n")
 #################################################################################
 #################################################################################
 
-# seeds = c(1729)
-# seeds = c(1729, 4104, 13832)
-seeds = c(4104, 13832)
+
+seeds = c(1729, 4104, 13832)
+
 n_epochs = 100
 n_images_per_iter = 1000
 n_acq_steps = 40
@@ -94,7 +94,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for random acquisition
+  # Run for random acquisition
   random_acquisition(
     n_acq_steps = n_acq_steps, 
     ix_train = initial_pool_train_val$ix_train, 
@@ -109,7 +109,7 @@ for(i in seq_along(seeds)){
     seed = seed_i)
   
   
-  # Run funciton for FREQUENTIST var ratios
+  # Run for FREQUENTIST var ratios
   frequentist_acquisition(
     acq_fun = 'freq_var_ratios', 
     n_acq_steps = n_acq_steps, 
@@ -125,7 +125,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for FREQUENTIST predictive entropy
+  # Run for FREQUENTIST predictive entropy
   frequentist_acquisition(
     acq_fun = 'freq_predictive_entropy', 
     n_acq_steps = n_acq_steps, 
@@ -141,7 +141,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for variation ratios
+  # Run for variation ratios
   acquire_observations(
     acq_fun = 'var_ratios', 
     n_acq_steps = n_acq_steps, 
@@ -159,7 +159,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for BALD
+  # Run for BALD
   acquire_observations(
     acq_fun = 'bald', 
     n_acq_steps = n_acq_steps, 
@@ -177,7 +177,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for predictive entropy
+  # Run for predictive entropy
   acquire_observations(
     acq_fun = 'predictive_entropy', 
     n_acq_steps = n_acq_steps, 

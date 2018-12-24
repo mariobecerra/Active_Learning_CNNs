@@ -103,7 +103,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for random acquisition
+  # Run for random acquisition
   random_acquisition(
     n_acq_steps = 50,
     ix_train = initial_pool_train_val$ix_train,
@@ -121,7 +121,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for FREQUENTIST var ratios
+  # Run for FREQUENTIST var ratios
   frequentist_acquisition(
     acq_fun = 'freq_var_ratios',
     n_acq_steps = 50,
@@ -138,7 +138,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for FREQUENTIST predictive entropy
+  # Run for FREQUENTIST predictive entropy
   frequentist_acquisition(
     acq_fun = 'freq_predictive_entropy',
     n_acq_steps = 50,
@@ -154,7 +154,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for variation ratios
+  # Run for variation ratios
   acquire_observations(
     acq_fun = 'var_ratios',
     n_acq_steps = 50,
@@ -171,7 +171,7 @@ for(i in seq_along(seeds)){
   )
   
   
-  # Run funciton for BALD
+  # Run for BALD
   acquire_observations(
     acq_fun = 'bald',
     n_acq_steps = 50,
@@ -189,7 +189,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for predictive entropy
+  # Run for predictive entropy
   acquire_observations(
     acq_fun = 'predictive_entropy',
     n_acq_steps = 50,

@@ -65,13 +65,6 @@ cat("Converted class vectors\n")
 #################################################################################
 #################################################################################
 
-#acq_fun_string = ['predictive_entropy', 'var_ratios', 'bald']
-
-# Random initial set of 20 points for training, 100 for validation and the rest as pooling set
-# shuffled_indices = as.integer(create_shuffled_indices_MNIST()) + 1
-# ix_train = shuffled_indices[1:20]
-# ix_val = shuffled_indices[21:120]
-# ix_pool = shuffled_indices[121:length(shuffled_indices)]
 
 seeds = c(1729, 4104, 13832)
 
@@ -84,9 +77,7 @@ for(i in seq_along(seeds)){
   ix_pool = initial_pool_train_val$ix_pool
   
   
-  
-  
-  # Run funciton for random acquisition
+  # Run for random acquisition
   random_acquisition(
     n_acq_steps = 100, 
     ix_train = initial_pool_train_val$ix_train, 
@@ -100,7 +91,7 @@ for(i in seq_along(seeds)){
     seed = seed_i)
   
   
-  # Run funciton for variation ratios
+  # Run for variation ratios
   acquire_observations(
     acq_fun = 'var_ratios', 
     n_acq_steps = 100, 
@@ -116,7 +107,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for BALD
+  # Run for BALD
   acquire_observations(
     acq_fun = 'bald', 
     n_acq_steps = 100, 
@@ -132,7 +123,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for predictive entropy
+  # Run for predictive entropy
   acquire_observations(
     acq_fun = 'predictive_entropy', 
     n_acq_steps = 100, 
@@ -149,7 +140,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for FREQUENTIST var ratios
+  # Run for FREQUENTIST var ratios
   frequentist_acquisition(
     acq_fun = 'freq_var_ratios', 
     n_acq_steps = 100, 
@@ -165,7 +156,7 @@ for(i in seq_along(seeds)){
   
   
   
-  # Run funciton for FREQUENTIST predictive entropy
+  # Run for FREQUENTIST predictive entropy
   frequentist_acquisition(
     acq_fun = 'freq_predictive_entropy', 
     n_acq_steps = 100, 
