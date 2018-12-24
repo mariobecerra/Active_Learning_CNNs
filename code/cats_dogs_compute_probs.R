@@ -2,41 +2,10 @@ library(stringi)
 library(reticulate)
 library(keras)
 library(tidyverse)
+library(here)
 
-# folder_name = "../out/cats_dogs/random_acq/"
-# 
-# model_filenames = grep("model", list.files(folder_name), value = T)
-# 
-# 
-# probs_filename = "probs_iter_random.rds"
-# 
-# if(exists(paste0("../out/cats_dogs/", probs_filename))){
-#   probs_iter = readRDS(paste0("../out/cats_dogs/", probs_filename))
-# } else {
-#   probs_iter = map_df(1:50, function(i){
-#     cat("Iter:", i)
-#     fn = model_filenames[i]
-#     cat("\n\tLoading model", fn, "...")
-#     model = load_model_hdf5(paste0(folder_name, fn))
-#     cat("loaded.\n\tMaking predictions...")
-#     out = predict(model, x_test, batch_size = 256) %>% 
-#       as_tibble() %>% 
-#       set_names(c("p1", "p2")) %>% 
-#       mutate(iter = as.integer(i))
-#     cat("predictions ready.\n\n")
-#     return(out)
-#   })
-#   
-#   saveRDS(probs_iter, paste0("../out/cats_dogs/", probs_filename))  
-# }
-
-
-# folder_names = c("../out/cats_dogs/random_acq/",
-#                  # "../out/cats_dogs/var_ratios/",
-#                  # "../out/cats_dogs/bald/",
-#                  # "../out/cats_dogs/predictive_entropy/",
-#                  "../out/cats_dogs/freq_var_ratios/",
-#                  "../out/cats_dogs/freq_predictive_entropy/")
+# Not the best practice, but this is so I don't have to change all files.
+setwd(here("code"))
 
 
 out_dir = "../out/cats_dogs/"

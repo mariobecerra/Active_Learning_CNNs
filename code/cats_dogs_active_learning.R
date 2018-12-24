@@ -1,6 +1,10 @@
 library(reticulate)
 library(keras)
 library(tidyverse)
+library(here)
+
+# Not the best practice, but this is so I don't have to change all files.
+setwd(here("code"))
 
 #################################################################################
 #################################################################################
