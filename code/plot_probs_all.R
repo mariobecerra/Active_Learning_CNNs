@@ -54,44 +54,12 @@ dat_probs_list = map(seq_along(rds_files), function(i){
 }) 
 
 
-# 
-# dat_probs_list = map(folder_names, function(aaaa){
-#   df_temp_outer = map_df(aaaa, function(folder_name){
-#     dataset_name = stri_replace_all(str = substr(folder_name, start = 8, stop = nchar(folder_name)), 
-#                                     regex = "\\/.*", 
-#                                     replacement = "")
-#     
-#     cat("\n\nDataset:", dataset_name, "\n")
-#     
-#     aux_filename = stri_replace_first(fixed = paste0("../out/", dataset_name, "/"), replacement = "", str = folder_name) %>% 
-#       stri_replace_first(fixed = "/", replacement = "", str = .)
-#     
-#     cat("\tAcquisition function folder:", aux_filename, "\n")
-#     
-#     probs_filename = paste0("probs_iter_", aux_filename, ".rds")
-#     df_temp = readRDS(paste0("../out/", dataset_name, "/", probs_filename))
-#     max_values = rowMaxs(as.matrix(select(df_temp, -iter)), value = TRUE)
-#     # max_values = apply(select(df_temp, -iter), 1, max)
-#     df_out = df_temp %>% 
-#       mutate(max_prob = max_values,
-#              acq_func = aux_filename,
-#              dataset = dataset_name)
-#     
-#     return(df_out)
-#   })
-#   return(df_temp_outer)
-# })
-
-
-
-
 
 dat_plots = map_df(dat_probs_list, function(dat){
   dat_out = dat %>% 
     select(iter, run, dataset, acq_func, max_prob)
   return(dat_out)
 }) 
-
 
 
 
