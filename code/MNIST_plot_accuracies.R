@@ -64,7 +64,7 @@ accuracies_avg = accuracies_all %>%
     coord_cartesian(ylim = c(80, 100),
                     xlim = c(100, 1000))  +
     my_theme() +
-    theme(axis.text.x = element_text(angle = 0, hjust = 1),
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
           panel.border = element_blank()) +
     labs(
       title = plot_title,
@@ -97,7 +97,7 @@ accuracies_avg = accuracies_all %>%
     coord_cartesian(ylim = c(80, 100),
                     xlim = c(100, 1000))  +
     my_theme() +
-    theme(axis.text.x = element_text(angle = 0, hjust = 1),
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
           panel.border = element_blank()) +
     labs(
       title = plot_title,
@@ -131,7 +131,7 @@ accuracies_avg = accuracies_all %>%
     coord_cartesian(ylim = c(80, 100),
                     xlim = c(100, 1000))  +
     my_theme() +
-    theme(axis.text.x = element_text(angle = 0, hjust = 1),
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
           panel.border = element_blank()) +
     labs(
       title = plot_title,
