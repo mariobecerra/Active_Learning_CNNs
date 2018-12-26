@@ -3,6 +3,7 @@ library(purrr)
 library(tidyr)
 library(readr)
 library(ggplot2)
+library(scales)
 library(here)
 
 source(here("code/plot_accuracies_utils.R"))
@@ -62,7 +63,7 @@ max_num_images = max(accuracies_avg$num_images)
     ggplot(aes(num_images, accuracy, color = names)) +
     geom_point(size = 0.3) +
     geom_line(size = 0.4) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000), labels = comma) +
     my_theme() +
     labs(
       title = plot_title,
@@ -88,7 +89,7 @@ max_num_images = max(accuracies_avg$num_images)
     geom_point(size = 0.6, aes(color = names)) +
     geom_line(size = 0.5, aes(color = names)) +
     geom_ribbon(aes(ymin = lower, ymax = upper, fill = names), alpha = 0.3, color = NA) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000), labels = comma) +
     my_theme() +
     labs(
       title = plot_title,
@@ -118,7 +119,7 @@ max_num_images = max(accuracies_avg$num_images)
     geom_point(size = 0.6, aes(color = names)) +
     geom_line(size = 0.5, aes(color = names)) +
     geom_ribbon(aes(ymin = lower, ymax = upper, fill = names), alpha = 0.3, color = NA) +
-    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000)) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000), labels = comma) +
     my_theme() +
     labs(
       title = plot_title,
