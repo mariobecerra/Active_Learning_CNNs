@@ -80,6 +80,37 @@ max_num_images = max(accuracies_avg$num_images)
          dpi = out_dpi)
 
 
+
+# Shading the lines of the previpus plot
+(accuracies_avg %>% 
+    filter(acq_fun %in% c("var_ratios", "predictive_entropy", "bald", "random")) %>% 
+    left_join(names_colors) %>% 
+    ggplot(aes(num_images, accuracy, color = names, fill = names)) +
+    geom_point(size = 0.3) +
+    geom_line(size = 0.4) +
+    geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.15, color = NA) +
+    scale_x_continuous(breaks = seq(0, max_num_images, by = 1000), labels = comma) +
+    my_theme() +
+    labs(
+      title = plot_title,
+      x = x_label, 
+      y = y_label, 
+      color = legend_name,
+      fill = legend_name) +
+    scale_color_manual(values = names_colors_vec) +
+    scale_fill_manual(values = names_colors_vec)
+) %>% 
+  ggsave(filename = paste0(plot_out_dir, "CIFAR10_accuracies_bayesian_shaded.png"), 
+         .,
+         width = 20,
+         height = 10,
+         units = out_units,
+         dpi = out_dpi)
+
+
+
+
+
 ## Predictive entropy
 
 (accuracies_avg %>% 
