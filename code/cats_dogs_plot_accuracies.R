@@ -83,6 +83,27 @@ max_num_images = max(accuracies_avg$num_images)
 
 ## Predictive entropy
 
+
+### Prueba poniendo sombra a todas las líneas
+# accuracies_avg %>% 
+#   filter(acq_fun %in% c("var_ratios", "predictive_entropy", "bald", "random")) %>% 
+#   left_join(names_colors) %>% 
+#   ggplot(aes(num_images, accuracy, color = names, fill = names)) +
+#   geom_point(size = 0.3) +
+#   geom_line(size = 0.4) +
+#   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.15, color = NA) +
+#   scale_x_continuous(breaks = seq(0, max_num_images, by = 100)) +
+#   my_theme() +
+#   labs(
+#     title = plot_title,
+#     x = x_label, 
+#     y = y_label, 
+#     color = legend_name,
+#     fill = legend_name) +
+#   scale_color_manual(values = names_colors_vec) +
+#   scale_fill_manual(values = names_colors_vec)
+
+
 (accuracies_avg %>% 
     left_join(names_colors) %>% 
     filter(acq_fun %in% c("freq_predictive_entropy", "predictive_entropy")) %>% 
