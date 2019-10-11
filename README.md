@@ -4,6 +4,8 @@ Code for my master's thesis in Computer Science, "A comparison of frequentist me
 
 The repository of the final document is https://github.com/mariobecerra/msc_thesis.
 
+And the final PDF file can be found [here](https://mariobecerra.github.io/files/school_projects/msc_thesis_2019-05-11_git.pdf).
+
 ## Folders:
 
 - `code`: All code used for the experiments. Files:
